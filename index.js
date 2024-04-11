@@ -4,7 +4,7 @@ const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
 const cheerio = require("cheerio");
 const questions = require('./questions.json');
-var language = "";
+let language = "";
 class NewBot {
   constructor() {
     this.languageHandlerAdded = false;
@@ -69,41 +69,48 @@ class NewBot {
     bot.on("callback_query", async (userInput) => {
       const languageButton = userInput.data;
       console.log(userInput.data);
-      this.deleteBotAndUserMSG(chatId, userInput)
+      // this.deleteBotAndUserMSG(chatId, userInput)
       switch (languageButton) {
         case "EN":
-          this.botSpeak("English language selected", chatId);
-          break;
+            this.botSpeak("English language selected", chatId);
+            language = 'EN'; // Записываем выбранный язык в переменную
+            this.kantorMenu(chatId, language);
+            break;
         case "RUS":
-          this.botSpeak("Выбран русский язык!", chatId);
-          break;
+            this.botSpeak("Выбран русский язык!", chatId);
+            language = 'RU'; // Записываем выбранный язык в переменную
+            this.kantorMenu(chatId, language);
+            break;
         case "PL":
-          this.botSpeak("Wybrano język Polski", chatId);
-          break;
+            this.botSpeak("Wybrano język Polski", chatId);
+            language = 'PL'; // Записываем выбранный язык в переменную
+            this.kantorMenu(chatId, language);
+            break;
         case "UKR":
-          this.botSpeak("Обрано Українську мову", chatId);
-          language ='UKR'
-          break;
+            this.botSpeak("Обрано Українську мову", chatId);
+            language = 'UKR'; // Записываем выбранный язык в переменную
+            this.kantorMenu(chatId, language);
+            break;
         default:
-          break;
-      }
+            break;
+    }
     });
   }
-  async deleteBotMSG(chatId,userInput) {
-    try {
-      await bot.deleteMessage(chatId, userInput.message.message_id);
-    } catch (error) {
-      console.error("Ошибка при удалении текущего сообщения:", error);
-    }
-  }
-  async deleteBotAndUserMSG(chatId, userInput) {
-    try {
-        await bot.deleteMessage(chatId, userInput.message.message_id);
-        await bot.deleteMessage(chatId, userInput.message.message_id - 1);
-    } catch (error) {
-        console.error("Ошибка при удалении сообщений:", error);
-    }
-}
+  // async deleteBotMSG(chatId,userInput) {
+  //   try {
+  //     await bot.deleteMessage(chatId, userInput.message.message_id);
+  //   } catch (error) {
+  //     console.error("Ошибка при удалении текущего сообщения:", error);
+  //   }
+  // }
+  // async deleteBotAndUserMSG(chatId, userInput) {
+  //   try {
+  //       await bot.deleteMessage(chatId, userInput.message.message_id);
+  //       await bot.deleteMessage(chatId, userInput.message.message_id - 1);
+  //   } catch (error) {
+  //       console.error("Ошибка при удалении сообщений:", error);
+  //   }
+// }
 
   languageButtons() {
     return JSON.stringify({
@@ -119,20 +126,27 @@ class NewBot {
       ],
     });
   }
-  kantorMenu() {
-    return JSON.stringify({
-      inline_keyboard: [
-        [
-          { text: "", callback_data: "EN" },
-          { text: "Русский", callback_data: "RUS" },
+  kantorMenu(chatId, language) {
+    const kursText = questions[language].options[0];
+    const contactText = questions[language].options[1];
+    const actualText = questions[language].options[2];
+    const startOverText = questions[language].options[3];
+
+    const keyboard = JSON.stringify({
+        inline_keyboard: [
+            [
+                { text: kursText, callback_data: "city" },
+                { text: contactText, callback_data: "contact" },
+            ],
+            [
+                { text: actualText, callback_data: "actual" },
+                { text: startOverText, callback_data: "again" },
+            ],
         ],
-        [
-          { text: "Українська", callback_data: "UKR" },
-          { text: "Polska", callback_data: "PL" },
-        ],
-      ],
     });
-  }
+
+    bot.sendMessage(chatId, "выбери", { reply_markup: keyboard });
+}
 }
 
 const myBot = new NewBot(); // Создаем экземпляр класса
