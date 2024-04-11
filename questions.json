@@ -1,0 +1,18 @@
+{
+    "EN": {
+      "question": "What information do you need?",
+      "options": ["Currency exchange rate", "Contacts", "Updates", "Start over"]
+    },
+    "RU": {
+      "question": "Какая информация вам нужна?",
+      "options": ["Курс валют", "Контакты", "Актуальное", "Начать сначала"]
+    },
+    "PL": {
+      "question": "Jakie informacje potrzebujesz?",
+      "options": ["Kurs walut", "Kontakt", "Aktualizacje", "Rozpocznij od nowa"]
+    },
+    "UKR": {
+      "question": "Яка інформація вам потрібна?",
+      "options": ["Курс валют", "Контакти", "Оновлення", "Почати спочатку"]
+    }
+  }
