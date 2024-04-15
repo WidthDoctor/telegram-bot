@@ -20,7 +20,7 @@
       "question": "Jakie informacje potrzebujesz?",
       "options": ["Kurs walut", "Kontakt", "Aktualizacje", "Rozpocznij od nowa"]
     },
-    "cities":["Krakow","Wroclaw","Przemysl","Gdansk","lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
+    "cities":["Krakow","Wroclaw","Przemysl","Gdansk","Lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
     "cityURL": {
       "Krakow": "https://kantor1913.pl/wszystkie-waluty",
       "Wroclaw": "https://kantor1913.pl/kursy-wroclaw-en",
