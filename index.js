@@ -5,16 +5,20 @@ const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
 const cheerio = require("cheerio");
 const questions = require("./questions.json");
+const { log } = require("console");
 let language = "";
 class NewBot {
   constructor() {
     this.usersBaseFilePath = "usersBase.json";
   }
-  async cerrentCource() {
+  async currentCource(city,userId) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
+    const cityURL = questions.cityURL[city];
     try {
       const fetchModule = await import("node-fetch");
       const fetch = fetchModule.default;
-      const response = await fetch("https://kantor1913.pl/wszystkie-waluty");
+      const response = await fetch(cityURL);
       const html = await response.text();
 
       const $ = cheerio.load(html); // Загружаем HTML с помощью Cheerio
@@ -33,7 +37,8 @@ class NewBot {
         currencyRates[currencyId][exchangeType] = content;
       });
 
-      console.log(currencyRates);
+      // console.log(currencyRates); //!JSON!
+      this.sendCurrentRate(currencyRates,userId);
     } catch (error) {
       console.error("Произошла ошибка:", error);
     }
@@ -45,7 +50,7 @@ class NewBot {
       const userLanguage = userInput.from.language_code;
       switch (text) {
         case "/start":
-          console.log(userInput.from.language_code);
+          // console.log(userInput.from.language_code);
           this.saveUser(userInput);
           this.gotoPrivateChat(userInput);
           break;
@@ -55,30 +60,50 @@ class NewBot {
       }
     });
     bot.on("callback_query", (callbackQuery) => {
-      console.log(callbackQuery);
+      // console.log(callbackQuery);
       const action = callbackQuery.data;
+      // console.log(action);
       const chatId = callbackQuery.message.chat.id;
+      const userId = callbackQuery.from.id;
 
+      const usersBaseData = fs.readFileSync("usersBase.json");
+      const usersBase = JSON.parse(usersBaseData);
+      const user = usersBase.find((user) => user.userId === userId);
+
+      const questionsData = fs.readFileSync("questions.json");
+      const questions = JSON.parse(questionsData);
+      const userLanguage = user.language;
+
+      const messageCity = questions[userLanguage].city;
+      const ALL_cities = questions.cities;
+      // const questionAboutCity =
       // Обработка событий в зависимости от значения callback_data
       switch (action) {
-        case "city":
-          // Обработка для "city"
+        case "kurs":
+          bot.sendMessage(userId, messageCity, {
+            reply_markup: this.selectCity(),
+          });
           break;
         case "contact":
-          // Обработка для "contact"
+          console.log(action, chatId);
           break;
         case "actual":
-          // Обработка для "actual"
+          console.log(action, chatId);
           break;
         case "again":
-          // Обработка для "again"
+          console.log(action, chatId);
           break;
         default:
-          // Действие по умолчанию, если callback_data не распознан
+          if (ALL_cities.includes(action)) {
+            // console.log(action);
+            this.currentCource(action,userId);
+            // const result = this.sendCurrentRate();
+            // bot.sendMessage(userId,"actual kurs", {reply_markup: result});
+
+          }
           break;
       }
     });
-
   }
   async gotoPrivateChat(userInput) {
     try {
@@ -99,7 +124,7 @@ class NewBot {
       const questions = JSON.parse(questionsData);
 
       const startMessage = questions[userLanguage].start;
-      const startMessageInBot = questions[userLanguage].startIn
+      const startMessageInBot = questions[userLanguage].startIn;
       if (userId === chatId) {
         await bot.sendMessage(userId, startMessageInBot, {
           reply_markup: this.kantorMenu(userLanguage),
@@ -184,6 +209,27 @@ class NewBot {
       console.error("Произошла ошибка при сохранении пользователя:", error);
     }
   }
+  sendCurrentRate(rate, userId) {
+    const buttons = Object.entries(rate).map(([currency, rates]) => {
+        let buttonLabel = "";
+        // Добавляем эмодзи флага страны и код валюты
+        buttonLabel += this.getCountryEmoji(currency) + " " + currency;
+        // Добавляем данные о покупке и продаже, если они доступны
+        if (rates.dk && rates.ds) {
+            buttonLabel += ` —    💵 ${rates.dk} 💴 ${rates.ds}`;
+        }
+        return [{ text: buttonLabel, callback_data: currency }];
+    });
+
+    // Отправляем сообщение с кнопками пользователю
+    bot.sendMessage(userId, "Выберите валюту и будет выполнена связь с менеджером", {
+        reply_markup: JSON.stringify({ inline_keyboard: buttons })
+    });
+
+    // Возвращаем массив кнопок
+    console.log(JSON.stringify({ inline_keyboard: buttons }));
+    return JSON.stringify({ inline_keyboard: buttons });
+}
 
   kantorMenu(language) {
     const questionsData = fs.readFileSync("questions.json");
@@ -206,9 +252,57 @@ class NewBot {
       ],
     };
   }
+  selectCity() {
+    return {
+      inline_keyboard: [
+        [
+          { text: "Krakow", callback_data: "Krakow" },
+          { text: "Wroclaw", callback_data: "Wroclaw" },
+        ],
+        [
+          { text: "Przemysl", callback_data: "Przemysl" },
+          { text: "Gdansk", callback_data: "Gdansk" },
+        ],
+        [
+          { text: "Lodz", callback_data: "Lodz" },
+          { text: "Warszawa", callback_data: "Warszawa" },
+        ],
+        [
+          { text: "KrakowPKP", callback_data: "KrakowPKP" },
+          { text: "Rzeszow", callback_data: "Rzeszow" },
+        ],
+        [
+          { text: "Poznan", callback_data: "Poznan" },
+          { text: "Lublin", callback_data: "Lublin" },
+        ],
+        [{ text: "Szczecin", callback_data: "Szczecin" }],
+      ],
+    };
+  }
+  getCountryEmoji(countryCode) {
+    // Примеры эмодзи флагов
+    const flagEmojis = {
+      EUR: "🇪🇺",
+      USD: "🇺🇸",
+      GBP: "🇬🇧",
+      CHF: "🇨🇭",
+      ILS: "🇮🇱",
+      CNY: "🇨🇳",
+      TRY: "🇹🇷",
+      CAD: "🇨🇦",
+      AUD: "🇦🇺",
+      NOK: "🇳🇴",
+      SEK: "🇸🇪",
+      CZK: "🇨🇿",
+      HUF: "🇭🇺",
+      HKD: "🇭🇰",
+      ISK: "🇮🇸",
+      JPY: "🇯🇵",
+      AED: "🇦🇪",
+    };
 
-
-
+    return flagEmojis[countryCode] || "";
+  }
   // languageButtons() {
   //   return JSON.stringify({
   //     inline_keyboard: [

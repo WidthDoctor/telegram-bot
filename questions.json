@@ -1,20 +1,37 @@
   {
     "en": {
+      "city":"Pick your city",
       "startIn": "What are you interested in?",
       "start": "Let's continue here. What are you interested in?",
       "question": "What information do you need?",
       "options": ["Currency exchange rate", "Contacts", "Updates", "Start over"]
     },
     "ru": {
+      "city":"Выбери свой город:",
       "startIn": "Что тебя интересует?",
       "start": "Давай продолжим здесь. Что тебя интересует?",
       "question": "Какая информация вам нужна?",
       "options": ["Курс валют", "Контакты", "Актуальное", "Начать сначала"]
     },
     "pl": {
+      "city":"Wybierz miasto:",
       "startIn": "Co Cię interesuje?",
       "start": "Kontynuujmy tutaj. Co Cię interesuje?",
       "question": "Jakie informacje potrzebujesz?",
       "options": ["Kurs walut", "Kontakt", "Aktualizacje", "Rozpocznij od nowa"]
+    },
+    "cities":["Krakow","Wroclaw","Przemysl","Gdansk","lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
+    "cityURL": {
+      "Krakow": "https://kantor1913.pl/wszystkie-waluty",
+      "Wroclaw": "https://kantor1913.pl/kursy-wroclaw-en",
+      "Przemysl": "https://kantor1913.pl/kursy-przemysl-en",
+      "Gdansk": "https://kantor1913.pl/kursy-gdansk-en",
+      "Lodz": "https://kantor1913.pl/kursy-lodz-en",
+      "Warszawa": "https://kantor1913.pl/kursy-warszawa-en",
+      "KrakowPKP": "https://kantor1913.pl/kursy-krakow-pkp-en",
+      "Rzeszow": "https://kantor1913.pl/kursy-rzeszow-en",
+      "Poznan": "https://kantor1913.pl/kursy-poznan-en",
+      "Lublin": "https://kantor1913.pl/kursy-lublin-en",
+      "Szczecin": "https://kantor1913.pl/kursy-szczecin-en"
     }
   }
