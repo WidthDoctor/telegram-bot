@@ -1,18 +1,20 @@
-{
-    "EN": {
+  {
+    "en": {
+      "startIn": "What are you interested in?",
+      "start": "Let's continue here. What are you interested in?",
       "question": "What information do you need?",
       "options": ["Currency exchange rate", "Contacts", "Updates", "Start over"]
     },
-    "RU": {
+    "ru": {
+      "startIn": "Что тебя интересует?",
+      "start": "Давай продолжим здесь. Что тебя интересует?",
       "question": "Какая информация вам нужна?",
       "options": ["Курс валют", "Контакты", "Актуальное", "Начать сначала"]
     },
-    "PL": {
+    "pl": {
+      "startIn": "Co Cię interesuje?",
+      "start": "Kontynuujmy tutaj. Co Cię interesuje?",
       "question": "Jakie informacje potrzebujesz?",
       "options": ["Kurs walut", "Kontakt", "Aktualizacje", "Rozpocznij od nowa"]
-    },
-    "UKR": {
-      "question": "Яка інформація вам потрібна?",
-      "options": ["Курс валют", "Контакти", "Оновлення", "Почати спочатку"]
     }
   }

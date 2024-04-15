@@ -1,13 +1,14 @@
 // npm run dev
 const token = "7122702562:AAFcNto8K7YTBf3NOQhB51q5LRYImjZXLlM";
+const fs = require("fs");
 const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
 const cheerio = require("cheerio");
-const questions = require('./questions.json');
+const questions = require("./questions.json");
 let language = "";
 class NewBot {
   constructor() {
-    this.languageHandlerAdded = false;
+    this.usersBaseFilePath = "usersBase.json";
   }
   async cerrentCource() {
     try {
@@ -36,117 +37,192 @@ class NewBot {
     } catch (error) {
       console.error("Произошла ошибка:", error);
     }
-  }
-  // Пустой метод 1
+  } //курс кракова
   commands() {
     bot.on("message", (userInput) => {
       const text = userInput.text;
       const chatId = userInput.chat.id;
+      const userLanguage = userInput.from.language_code;
       switch (text) {
         case "/start":
-          bot.sendMessage(
-            chatId,
-            `Привет, ${userInput.from.first_name}! Выберите язык:`,
-            {
-              reply_markup: this.languageButtons(),
-            }
-          );
-          if (!this.languageHandlerAdded) {
-            this.language(chatId);
-            this.languageHandlerAdded = true; // Устанавливаем флаг в true, чтобы указать, что обработчик событий был добавлен
-          }
+          console.log(userInput.from.language_code);
+          this.saveUser(userInput);
+          this.gotoPrivateChat(userInput);
           break;
 
         default:
           break;
       }
     });
-  }
-  botSpeak(text, chatId) {
-    bot.sendMessage(chatId, text);
-  }
-  language(chatId) {
-    bot.on("callback_query", async (userInput) => {
-      const languageButton = userInput.data;
-      console.log(userInput.data);
-      // this.deleteBotAndUserMSG(chatId, userInput)
-      switch (languageButton) {
-        case "EN":
-            this.botSpeak("English language selected", chatId);
-            language = 'EN'; // Записываем выбранный язык в переменную
-            this.kantorMenu(chatId, language);
-            break;
-        case "RUS":
-            this.botSpeak("Выбран русский язык!", chatId);
-            language = 'RU'; // Записываем выбранный язык в переменную
-            this.kantorMenu(chatId, language);
-            break;
-        case "PL":
-            this.botSpeak("Wybrano język Polski", chatId);
-            language = 'PL'; // Записываем выбранный язык в переменную
-            this.kantorMenu(chatId, language);
-            break;
-        case "UKR":
-            this.botSpeak("Обрано Українську мову", chatId);
-            language = 'UKR'; // Записываем выбранный язык в переменную
-            this.kantorMenu(chatId, language);
-            break;
-        default:
-            break;
-    }
-    });
-  }
-  // async deleteBotMSG(chatId,userInput) {
-  //   try {
-  //     await bot.deleteMessage(chatId, userInput.message.message_id);
-  //   } catch (error) {
-  //     console.error("Ошибка при удалении текущего сообщения:", error);
-  //   }
-  // }
-  // async deleteBotAndUserMSG(chatId, userInput) {
-  //   try {
-  //       await bot.deleteMessage(chatId, userInput.message.message_id);
-  //       await bot.deleteMessage(chatId, userInput.message.message_id - 1);
-  //   } catch (error) {
-  //       console.error("Ошибка при удалении сообщений:", error);
-  //   }
-// }
+    bot.on("callback_query", (callbackQuery) => {
+      console.log(callbackQuery);
+      const action = callbackQuery.data;
+      const chatId = callbackQuery.message.chat.id;
 
-  languageButtons() {
-    return JSON.stringify({
-      inline_keyboard: [
-        [
-          { text: "English", callback_data: "EN" },
-          { text: "Русский", callback_data: "RUS" },
-        ],
-        [
-          { text: "Українська", callback_data: "UKR" },
-          { text: "Polska", callback_data: "PL" },
-        ],
-      ],
+      // Обработка событий в зависимости от значения callback_data
+      switch (action) {
+        case "city":
+          // Обработка для "city"
+          break;
+        case "contact":
+          // Обработка для "contact"
+          break;
+        case "actual":
+          // Обработка для "actual"
+          break;
+        case "again":
+          // Обработка для "again"
+          break;
+        default:
+          // Действие по умолчанию, если callback_data не распознан
+          break;
+      }
     });
+
   }
-  kantorMenu(chatId, language) {
+  async gotoPrivateChat(userInput) {
+    try {
+      const userId = userInput.from.id;
+      const chatId = userInput.chat.id;
+
+      const usersBaseData = fs.readFileSync("usersBase.json");
+      const usersBase = JSON.parse(usersBaseData);
+
+      const user = usersBase.find((user) => user.userId === userId);
+
+      if (!user) {
+        return; // Прерываем выполнение функции, если пользователь не найден в базе данных
+      }
+
+      const userLanguage = user.language;
+      const questionsData = fs.readFileSync("questions.json");
+      const questions = JSON.parse(questionsData);
+
+      const startMessage = questions[userLanguage].start;
+      const startMessageInBot = questions[userLanguage].startIn
+      if (userId === chatId) {
+        await bot.sendMessage(userId, startMessageInBot, {
+          reply_markup: this.kantorMenu(userLanguage),
+        });
+      }
+      if (userId !== chatId) {
+        await bot.sendMessage(userId, startMessage, {
+          reply_markup: this.kantorMenu(userLanguage),
+        });
+      }
+    } catch (error) {
+      console.error("Произошла ошибка в методе gotoPrivateChat:", error);
+    }
+  }
+  async saveUser(userInput) {
+    try {
+      const { first_name, last_name, username, id, language_code } =
+        userInput.from;
+      const userId = id;
+
+      let usersBase = [];
+
+      // Проверяем существует ли файл JSON и читаем его содержимое
+      if (fs.existsSync(this.usersBaseFilePath)) {
+        const usersBaseData = fs.readFileSync(this.usersBaseFilePath);
+
+        // Проверяем, не пуст ли файл JSON
+        if (usersBaseData.length > 0) {
+          usersBase = JSON.parse(usersBaseData);
+        }
+      }
+
+      // Проверяем, есть ли уже пользователь с таким userId
+      const existingUserIndex = usersBase.findIndex(
+        (user) => user.userId === userId
+      );
+      if (existingUserIndex !== -1) {
+        // Проверяем, есть ли изменения в данных пользователя
+        const existingUser = usersBase[existingUserIndex];
+        const updatedUser = {
+          username: username || first_name || last_name || "Unknown",
+          userId,
+          language: language_code,
+        };
+
+        // Если есть изменения, обновляем данные пользователя в базе данных
+        if (
+          existingUser.username !== updatedUser.username ||
+          existingUser.language !== updatedUser.language
+        ) {
+          usersBase[existingUserIndex] = updatedUser;
+
+          // Записываем обновленные данные в файл JSON
+          fs.writeFileSync(
+            this.usersBaseFilePath,
+            JSON.stringify(usersBase, null, 2)
+          );
+
+          // console.log("Данные пользователя успешно обновлены в базе данных.");
+        } else {
+          // console.log("Нет изменений в данных пользователя.");
+        }
+
+        return; // Прерываем выполнение функции
+      }
+
+      // Добавление нового пользователя в массив
+      usersBase.push({
+        username: username || first_name || last_name || "Unknown",
+        userId,
+        language: language_code,
+      });
+
+      // Запись обновленных данных в файл JSON
+      fs.writeFileSync(
+        this.usersBaseFilePath,
+        JSON.stringify(usersBase, null, 2)
+      );
+
+      // console.log("Пользователь успешно добавлен в базу данных.");
+    } catch (error) {
+      console.error("Произошла ошибка при сохранении пользователя:", error);
+    }
+  }
+
+  kantorMenu(language) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
     const kursText = questions[language].options[0];
     const contactText = questions[language].options[1];
     const actualText = questions[language].options[2];
     const startOverText = questions[language].options[3];
 
-    const keyboard = JSON.stringify({
-        inline_keyboard: [
-            [
-                { text: kursText, callback_data: "city" },
-                { text: contactText, callback_data: "contact" },
-            ],
-            [
-                { text: actualText, callback_data: "actual" },
-                { text: startOverText, callback_data: "again" },
-            ],
+    return {
+      inline_keyboard: [
+        [
+          { text: kursText, callback_data: "kurs" },
+          { text: contactText, callback_data: "contact" },
         ],
-    });
+        [
+          { text: actualText, callback_data: "actual" },
+          { text: startOverText, callback_data: "again" },
+        ],
+      ],
+    };
+  }
 
-    bot.sendMessage(chatId, "выбери", { reply_markup: keyboard });
-}
+
+
+  // languageButtons() {
+  //   return JSON.stringify({
+  //     inline_keyboard: [
+  //       [
+  //         { text: "English", callback_data: "EN" },
+  //         { text: "Русский", callback_data: "RUS" },
+  //       ],
+  //       [
+  //         { text: "Українська", callback_data: "UKR" },
+  //         { text: "Polska", callback_data: "PL" },
+  //       ],
+  //     ],
+  //   });
+  // } //? МОЖЕТ ПОД ЧТО-ТО ДРУГОЕ ЭТИ КНОПКИ ПОЙДУТ КАК ШАБЛОН
 }
 
 const myBot = new NewBot(); // Создаем экземпляр класса
