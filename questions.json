@@ -1,5 +1,6 @@
   {
     "en": {
+      "contactQuestion": "Which city manager should I contact?",
       "city":"Pick your city",
       "startIn": "What are you interested in?",
       "start": "Let's continue here. What are you interested in?",
@@ -7,6 +8,7 @@
       "options": ["Currency exchange rate", "Contacts", "Updates", "Start over"]
     },
     "ru": {
+      "contactQuestion":"С менеджером какого города нужно связаться?",
       "city":"Выбери свой город:",
       "startIn": "Что тебя интересует?",
       "start": "Давай продолжим здесь. Что тебя интересует?",
@@ -14,6 +16,7 @@
       "options": ["Курс валют", "Контакты", "Актуальное", "Начать сначала"]
     },
     "pl": {
+      "contactQuestion": "Z jakim menedżerem miasta należy się skontaktować?",
       "city":"Wybierz miasto:",
       "startIn": "Co Cię interesuje?",
       "start": "Kontynuujmy tutaj. Co Cię interesuje?",
@@ -21,6 +24,20 @@
       "options": ["Kurs walut", "Kontakt", "Aktualizacje", "Rozpocznij od nowa"]
     },
     "cities":["Krakow","Wroclaw","Przemysl","Gdansk","Lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
+
+      "citiesLanguage": [
+        {"en": "Krakow", "pl": "Kraków", "ru": "Краков"},
+        {"en": "Wroclaw", "pl": "Wrocław", "ru": "Вроцлав"},
+        {"en": "Przemysl", "pl": "Przemyśl", "ru": "Пшемысль"},
+        {"en": "Gdansk", "pl": "Gdańsk", "ru": "Гданьск"},
+        {"en": "Lodz", "pl": "Łódź", "ru": "Лодзь"},
+        {"en": "Warszawa", "pl": "Warszawa", "ru": "Варшава"},
+        {"en": "KrakowPKP", "pl": "Kraków PKP", "ru": "Краков ПКП"},
+        {"en": "Rzeszow", "pl": "Rzeszów", "ru": "Жешув"},
+        {"en": "Poznan", "pl": "Poznań", "ru": "Познань"},
+        {"en": "Lublin", "pl": "Lublin", "ru": "Люблин"},
+        {"en": "Szczecin", "pl": "Szczecin", "ru": "Щецин"}
+      ],
     "cityURL": {
       "Krakow": "https://kantor1913.pl/wszystkie-waluty",
       "Wroclaw": "https://kantor1913.pl/kursy-wroclaw-en",

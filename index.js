@@ -11,7 +11,7 @@ class NewBot {
   constructor() {
     this.usersBaseFilePath = "usersBase.json";
   }
-  async currentCource(city,userId) {
+  async currentCource(city, userId) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
     const cityURL = questions.cityURL[city];
@@ -38,11 +38,11 @@ class NewBot {
       });
 
       // console.log(currencyRates); //!JSON!
-      this.sendCurrentRate(currencyRates,userId);
+      this.sendCurrentRate(currencyRates, userId);
     } catch (error) {
       console.error("Произошла ошибка:", error);
     }
-  } //курс кракова
+  } //курс
   commands() {
     bot.on("message", (userInput) => {
       const text = userInput.text;
@@ -75,17 +75,20 @@ class NewBot {
       const userLanguage = user.language;
 
       const messageCity = questions[userLanguage].city;
+      const messageContactQuestion = questions[userLanguage].contactQuestion;
       const ALL_cities = questions.cities;
       // const questionAboutCity =
       // Обработка событий в зависимости от значения callback_data
       switch (action) {
         case "kurs":
           bot.sendMessage(userId, messageCity, {
-            reply_markup: this.selectCity(),
+            reply_markup: this.selectCity(userLanguage),
           });
           break;
         case "contact":
-          console.log(action, chatId);
+          bot.sendMessage(userId, messageContactQuestion, {
+            reply_markup: this.selectCityForContact(),
+          });
           break;
         case "actual":
           console.log(action, chatId);
@@ -95,11 +98,14 @@ class NewBot {
           break;
         default:
           if (ALL_cities.includes(action)) {
-            // console.log(action);
-            this.currentCource(action,userId);
+            console.log(action);
+            this.currentCource(action, userId);
             // const result = this.sendCurrentRate();
             // bot.sendMessage(userId,"actual kurs", {reply_markup: result});
-
+          }
+          if (ALL_cities.includes(action) + "Tel") {
+            console.log(action);
+            this.sendContactsForUser(action, userId);
           }
           break;
       }
@@ -211,26 +217,77 @@ class NewBot {
   }
   sendCurrentRate(rate, userId) {
     const buttons = Object.entries(rate).map(([currency, rates]) => {
-        let buttonLabel = "";
-        // Добавляем эмодзи флага страны и код валюты
-        buttonLabel += this.getCountryEmoji(currency) + " " + currency;
-        // Добавляем данные о покупке и продаже, если они доступны
-        if (rates.dk && rates.ds) {
-            buttonLabel += ` —    💵 ${rates.dk} 💴 ${rates.ds}`;
-        }
-        return [{ text: buttonLabel, callback_data: currency }];
+      let buttonLabel = "";
+      // Добавляем эмодзи флага страны и код валюты
+      buttonLabel += this.getCountryEmoji(currency) + " " + currency;
+      // Добавляем данные о покупке и продаже, если они доступны
+      if (rates.dk && rates.ds) {
+        buttonLabel += ` —    💵 ${rates.dk} 💴 ${rates.ds}`;
+      }
+      return [{ text: buttonLabel, callback_data: currency }];
     });
 
     // Отправляем сообщение с кнопками пользователю
-    bot.sendMessage(userId, "Выберите валюту и будет выполнена связь с менеджером", {
-        reply_markup: JSON.stringify({ inline_keyboard: buttons })
-    });
+    bot.sendMessage(userId, "Актуальный курс на данный момент:", {
+      reply_markup: JSON.stringify({ inline_keyboard: buttons }),
+  });
 
     // Возвращаем массив кнопок
     console.log(JSON.stringify({ inline_keyboard: buttons }));
     return JSON.stringify({ inline_keyboard: buttons });
-}
+  }
+  sendContactsForUser(action, userId) {
+    console.log("соси письку", action);
+    switch (action) {
+      case "KrakowTel":
+        bot.sendContact(userId, "+1231231231", "Manager Krakow");
 
+        break;
+      case "WroclawTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "PrzemyslTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "GdanskTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "LodzTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "WarszawaTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "KrakowPKPTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "RzeszowTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "PoznanTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "LublinTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+      case "SzczecinTel":
+        bot.sendContact(userId, "+1234567890", "Don Perdole");
+
+        break;
+
+      default:
+        break;
+    }
+  }
   kantorMenu(language) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
@@ -252,30 +309,45 @@ class NewBot {
       ],
     };
   }
-  selectCity() {
+  selectCity(userLanguage) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
+
+    // Находим объект с городами для нужного языка
+    const citiesData = questions.citiesLanguage.find(cityObj => cityObj[userLanguage]);
+    // Получаем массив городов для этого языка
+    const cities = Object.values(citiesData);
+
+    // Создаем массив кнопок для выбора города в зависимости от языка
+    const buttons = cities.map(city => ({ text: city, callback_data: city }));
+
+    // Возвращаем объект inline_keyboard с кнопками выбора города
+    return { inline_keyboard: buttons };
+}
+  selectCityForContact() {
     return {
       inline_keyboard: [
         [
-          { text: "Krakow", callback_data: "Krakow" },
-          { text: "Wroclaw", callback_data: "Wroclaw" },
+          { text: "Krakow", callback_data: "KrakowTel" },
+          { text: "Wroclaw", callback_data: "WroclawTel" },
         ],
         [
-          { text: "Przemysl", callback_data: "Przemysl" },
-          { text: "Gdansk", callback_data: "Gdansk" },
+          { text: "Przemysl", callback_data: "PrzemyslTel" },
+          { text: "Gdansk", callback_data: "GdanskTel" },
         ],
         [
-          { text: "Lodz", callback_data: "Lodz" },
-          { text: "Warszawa", callback_data: "Warszawa" },
+          { text: "Lodz", callback_data: "LodzTel" },
+          { text: "Warszawa", callback_data: "WarszawaTel" },
         ],
         [
-          { text: "KrakowPKP", callback_data: "KrakowPKP" },
-          { text: "Rzeszow", callback_data: "Rzeszow" },
+          { text: "KrakowPKP", callback_data: "KrakowPKPTel" },
+          { text: "Rzeszow", callback_data: "RzeszowTel" },
         ],
         [
-          { text: "Poznan", callback_data: "Poznan" },
-          { text: "Lublin", callback_data: "Lublin" },
+          { text: "Poznan", callback_data: "PoznanTel" },
+          { text: "Lublin", callback_data: "LublinTel" },
         ],
-        [{ text: "Szczecin", callback_data: "Szczecin" }],
+        [{ text: "Szczecin", callback_data: "SzczecinTel" }],
       ],
     };
   }
