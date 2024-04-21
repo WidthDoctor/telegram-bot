@@ -38,7 +38,7 @@
         {"en": "Lublin", "pl": "Lublin", "ru": "Люблин"},
         {"en": "Szczecin", "pl": "Szczecin", "ru": "Щецин"}
       ],
-    "cityURL": {
+    "cityURL": { //!МЕНЯЕМ
       "Krakow": "https://kantor1913.pl/wszystkie-waluty",
       "Wroclaw": "https://kantor1913.pl/kursy-wroclaw-en",
       "Przemysl": "https://kantor1913.pl/kursy-przemysl-en",

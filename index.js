@@ -5,13 +5,13 @@ const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
 const cheerio = require("cheerio");
 const questions = require("./questions.json");
-const { log } = require("console");
 let language = "";
 class NewBot {
   constructor() {
     this.usersBaseFilePath = "usersBase.json";
   }
-  async currentCource(city, userId) {
+  async currentCource(city, userId) {//! надо менять cityUrl на города что могут быть там или нихуя не будет работать
+    console.log(city+ 'пришел в валютник');
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
     const cityURL = questions.cityURL[city];
@@ -62,6 +62,7 @@ class NewBot {
     bot.on("callback_query", (callbackQuery) => {
       // console.log(callbackQuery);
       const action = callbackQuery.data;
+      console.log(action);
       // console.log(action);
       const chatId = callbackQuery.message.chat.id;
       const userId = callbackQuery.from.id;
@@ -98,7 +99,6 @@ class NewBot {
           break;
         default:
           if (ALL_cities.includes(action)) {
-            console.log(action);
             this.currentCource(action, userId);
             // const result = this.sendCurrentRate();
             // bot.sendMessage(userId,"actual kurs", {reply_markup: result});
@@ -230,7 +230,7 @@ class NewBot {
     // Отправляем сообщение с кнопками пользователю
     bot.sendMessage(userId, "Актуальный курс на данный момент:", {
       reply_markup: JSON.stringify({ inline_keyboard: buttons }),
-  });
+    });
 
     // Возвращаем массив кнопок
     console.log(JSON.stringify({ inline_keyboard: buttons }));
@@ -313,18 +313,26 @@ class NewBot {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
 
-    // Находим объект с городами для нужного языка
-    const citiesData = questions.citiesLanguage.find(cityObj => cityObj[userLanguage]);
-    // Получаем массив городов для этого языка
-    const cities = Object.values(citiesData);
+    const citiesData = questions.citiesLanguage;
+    const cities = citiesData.map((cityObj) => cityObj[userLanguage]);
 
-    // Создаем массив кнопок для выбора города в зависимости от языка
-    const buttons = cities.map(city => ({ text: city, callback_data: city }));
+    const buttons = cities.map((city) => ({
+      text: city,
+      callback_data: city, // или можно указать другие данные обратного вызова, если это необходимо
+    }));
+    const ALL_cities = [].concat(
+      ...citiesData.map((cityObj) => Object.values(cityObj))
+    );
+    console.log(ALL_cities);
+    // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
+    const inlineKeyboard = [];
+    for (let i = 0; i < buttons.length; i += 3) {
+      inlineKeyboard.push(buttons.slice(i, i + 3));
+    }
+    return { inline_keyboard: inlineKeyboard };
+  }
 
-    // Возвращаем объект inline_keyboard с кнопками выбора города
-    return { inline_keyboard: buttons };
-}
-  selectCityForContact() {
+  selectCityForContact() { //! а тут хуйня потому что тут прописано ручками и поэтому он не вдупляет города новые..
     return {
       inline_keyboard: [
         [
