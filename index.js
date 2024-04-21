@@ -60,10 +60,7 @@ class NewBot {
       }
     });
     bot.on("callback_query", (callbackQuery) => {
-      // console.log(callbackQuery);
       const action = callbackQuery.data;
-      console.log(action);
-      // console.log(action);
       const chatId = callbackQuery.message.chat.id;
       const userId = callbackQuery.from.id;
 
@@ -77,7 +74,8 @@ class NewBot {
 
       const messageCity = questions[userLanguage].city;
       const messageContactQuestion = questions[userLanguage].contactQuestion;
-      const ALL_cities = questions.cities;
+      const ALL_citiesJSON = questions.citiesLanguage;
+      const citiesKeys = ALL_citiesJSON.flatMap((cityObj) => Object.values(cityObj));
       // const questionAboutCity =
       // Обработка событий в зависимости от значения callback_data
       switch (action) {
@@ -98,12 +96,11 @@ class NewBot {
           console.log(action, chatId);
           break;
         default:
-          if (ALL_cities.includes(action)) {
+          if (citiesKeys.includes(action)) {
             this.currentCource(action, userId);
-            // const result = this.sendCurrentRate();
-            // bot.sendMessage(userId,"actual kurs", {reply_markup: result});
+
           }
-          if (ALL_cities.includes(action) + "Tel") {
+          if (citiesKeys.includes(action) + "Tel") {
             console.log(action);
             this.sendContactsForUser(action, userId);
           }
@@ -238,7 +235,7 @@ class NewBot {
   }
   sendContactsForUser(action, userId) {
     console.log("соси письку", action);
-    switch (action) {
+    switch (action) {//!эти кейсы тоже надо думать
       case "KrakowTel":
         bot.sendContact(userId, "+1231231231", "Manager Krakow");
 
@@ -314,16 +311,11 @@ class NewBot {
     const questions = JSON.parse(questionsData);
 
     const citiesData = questions.citiesLanguage;
-    const cities = citiesData.map((cityObj) => cityObj[userLanguage]);
-
+    const cities = citiesData.flatMap((cityObj) => Object.values(cityObj));
     const buttons = cities.map((city) => ({
       text: city,
       callback_data: city, // или можно указать другие данные обратного вызова, если это необходимо
     }));
-    const ALL_cities = [].concat(
-      ...citiesData.map((cityObj) => Object.values(cityObj))
-    );
-    console.log(ALL_cities);
     // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
     const inlineKeyboard = [];
     for (let i = 0; i < buttons.length; i += 3) {

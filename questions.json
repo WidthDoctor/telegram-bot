@@ -38,17 +38,47 @@
         {"en": "Lublin", "pl": "Lublin", "ru": "Люблин"},
         {"en": "Szczecin", "pl": "Szczecin", "ru": "Щецин"}
       ],
-    "cityURL": { //!МЕНЯЕМ
-      "Krakow": "https://kantor1913.pl/wszystkie-waluty",
-      "Wroclaw": "https://kantor1913.pl/kursy-wroclaw-en",
-      "Przemysl": "https://kantor1913.pl/kursy-przemysl-en",
-      "Gdansk": "https://kantor1913.pl/kursy-gdansk-en",
-      "Lodz": "https://kantor1913.pl/kursy-lodz-en",
-      "Warszawa": "https://kantor1913.pl/kursy-warszawa-en",
-      "KrakowPKP": "https://kantor1913.pl/kursy-krakow-pkp-en",
-      "Rzeszow": "https://kantor1913.pl/kursy-rzeszow-en",
-      "Poznan": "https://kantor1913.pl/kursy-poznan-en",
-      "Lublin": "https://kantor1913.pl/kursy-lublin-en",
-      "Szczecin": "https://kantor1913.pl/kursy-szczecin-en"
-    }
+    "cityURL": {
+    "Krakow": "https://kantor1913.pl/wszystkie-waluty",
+    "Kraków": "https://kantor1913.pl/wszystkie-waluty",
+    "Краков": "https://kantor1913.pl/wszystkie-waluty",
+
+    "Wroclaw": "https://kantor1913.pl/kursy-wroclaw-en",
+    "Wrocław": "https://kantor1913.pl/kursy-wroclaw-en",
+    "Вроцлав": "https://kantor1913.pl/kursy-wroclaw-en",
+
+    "Przemysl": "https://kantor1913.pl/kursy-przemysl-en",
+    "Przemyśl": "https://kantor1913.pl/kursy-przemysl-en",
+    "Пшемысль": "https://kantor1913.pl/kursy-przemysl-en",
+
+    "Gdansk": "https://kantor1913.pl/kursy-gdansk-en",
+    "Gdańsk": "https://kantor1913.pl/kursy-gdansk-en",
+    "Гданьск": "https://kantor1913.pl/kursy-gdansk-en",
+
+    "Lodz": "https://kantor1913.pl/kursy-lodz-en",
+    "Łódź": "https://kantor1913.pl/kursy-lodz-en",
+    "Лодзь": "https://kantor1913.pl/kursy-lodz-en",
+
+    "Warszawa": "https://kantor1913.pl/kursy-warszawa-en",
+    "Варшава": "https://kantor1913.pl/kursy-warszawa-en",
+
+    "KrakowPKP": "https://kantor1913.pl/kursy-krakow-pkp-en",
+    "Kraków PKP": "https://kantor1913.pl/kursy-krakow-pkp-en",
+    "Краков ПКП": "https://kantor1913.pl/kursy-krakow-pkp-en",
+
+    "Rzeszow": "https://kantor1913.pl/kursy-rzeszow-en",
+    "Rzeszów": "https://kantor1913.pl/kursy-rzeszow-en",
+    "Жешув": "https://kantor1913.pl/kursy-rzeszow-en",
+
+    "Poznan": "https://kantor1913.pl/kursy-poznan-en",
+    "Poznań": "https://kantor1913.pl/kursy-poznan-en",
+    "Познань": "https://kantor1913.pl/kursy-poznan-en",
+
+    "Lublin": "https://kantor1913.pl/kursy-lublin-en",
+    "Люблин": "https://kantor1913.pl/kursy-lublin-en",
+
+    "Szczecin": "https://kantor1913.pl/kursy-szczecin-en",
+    "Szczecin": "https://kantor1913.pl/kursy-szczecin-en",
+    "Щецин": "https://kantor1913.pl/kursy-szczecin-en"
   }
+}
