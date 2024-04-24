@@ -11,7 +11,7 @@ class NewBot {
     this.usersBaseFilePath = "usersBase.json";
   }
   async currentCource(city, userId) {//! надо менять cityUrl на города что могут быть там или нихуя не будет работать
-    console.log(city+ 'пришел в валютник');
+    // console.log(city+ 'пришел в валютник');
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
     const cityURL = questions.cityURL[city];
@@ -86,14 +86,14 @@ class NewBot {
           break;
         case "contact":
           bot.sendMessage(userId, messageContactQuestion, {
-            reply_markup: this.selectCityForContact(),
+            reply_markup: this.selectCityForContact(userLanguage),
           });
           break;
         case "actual":
-          console.log(action, chatId);
+          // console.log(action, chatId);
           break;
         case "again":
-          console.log(action, chatId);
+          // console.log(action, chatId);
           break;
         default:
           if (citiesKeys.includes(action)) {
@@ -101,7 +101,7 @@ class NewBot {
 
           }
           if (citiesKeys.includes(action) + "Tel") {
-            console.log(action);
+            // console.log(action);
             this.sendContactsForUser(action, userId);
           }
           break;
@@ -143,6 +143,7 @@ class NewBot {
     }
   }
   async saveUser(userInput) {
+    console.log(userInput);
     try {
       const { first_name, last_name, username, id, language_code } =
         userInput.from;
@@ -230,53 +231,72 @@ class NewBot {
     });
 
     // Возвращаем массив кнопок
-    console.log(JSON.stringify({ inline_keyboard: buttons }));
+    // console.log(JSON.stringify({ inline_keyboard: buttons }));
     return JSON.stringify({ inline_keyboard: buttons });
   }
   sendContactsForUser(action, userId) {
-    console.log("соси письку", action);
+    // console.log("соси письку", action);
     switch (action) {//!эти кейсы тоже надо думать
       case "KrakowTel":
+      case "КраковTel":
+        case "KrakówTel":
         bot.sendContact(userId, "+1231231231", "Manager Krakow");
 
         break;
+        case "WrocławTel":
+          case "ВроцлавTel":
       case "WroclawTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "PrzemyslTel":
+        case "PrzemyślTel":
+          case "ПшемысльTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "GdanskTel":
+        case "GdańskTel":
+          case "ГданьскTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "LodzTel":
+        case "ŁódźTel":
+          case "ЛодзьTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "WarszawaTel":
+        case "ВаршаваTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "KrakowPKPTel":
+        case "Kraków PKPTel":
+          case "Краков ПКПTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "RzeszowTel":
+        case "RzeszówTel":
+          case "ЖешувTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "PoznanTel":
+        case "PoznańTel":
+          case "ПознаньTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "LublinTel":
+        case "ЛюблинTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "SzczecinTel":
+        case "ЩецинTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
@@ -311,7 +331,7 @@ class NewBot {
     const questions = JSON.parse(questionsData);
 
     const citiesData = questions.citiesLanguage;
-    const cities = citiesData.flatMap((cityObj) => Object.values(cityObj));
+    const cities = citiesData.flatMap((cityObj) =>  cityObj[userLanguage]);
     const buttons = cities.map((city) => ({
       text: city,
       callback_data: city, // или можно указать другие данные обратного вызова, если это необходимо
@@ -324,32 +344,22 @@ class NewBot {
     return { inline_keyboard: inlineKeyboard };
   }
 
-  selectCityForContact() { //! а тут хуйня потому что тут прописано ручками и поэтому он не вдупляет города новые..
-    return {
-      inline_keyboard: [
-        [
-          { text: "Krakow", callback_data: "KrakowTel" },
-          { text: "Wroclaw", callback_data: "WroclawTel" },
-        ],
-        [
-          { text: "Przemysl", callback_data: "PrzemyslTel" },
-          { text: "Gdansk", callback_data: "GdanskTel" },
-        ],
-        [
-          { text: "Lodz", callback_data: "LodzTel" },
-          { text: "Warszawa", callback_data: "WarszawaTel" },
-        ],
-        [
-          { text: "KrakowPKP", callback_data: "KrakowPKPTel" },
-          { text: "Rzeszow", callback_data: "RzeszowTel" },
-        ],
-        [
-          { text: "Poznan", callback_data: "PoznanTel" },
-          { text: "Lublin", callback_data: "LublinTel" },
-        ],
-        [{ text: "Szczecin", callback_data: "SzczecinTel" }],
-      ],
-    };
+  selectCityForContact(userLanguage) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
+
+    const citiesData = questions.citiesLanguage;
+    const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
+    const buttons = cities.map((city) => ({
+      text: city,
+      callback_data: city+"Tel", // или можно указать другие данные обратного вызова, если это необходимо
+    }));
+    // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
+    const inlineKeyboard = [];
+    for (let i = 0; i < buttons.length; i += 3) {
+      inlineKeyboard.push(buttons.slice(i, i + 3));
+    }
+    return { inline_keyboard: inlineKeyboard };
   }
   getCountryEmoji(countryCode) {
     // Примеры эмодзи флагов
