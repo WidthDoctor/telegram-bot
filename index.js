@@ -76,7 +76,6 @@ class NewBot {
       const messageContactQuestion = questions[userLanguage].contactQuestion;
       const ALL_citiesJSON = questions.citiesLanguage;
       const citiesKeys = ALL_citiesJSON.flatMap((cityObj) => Object.values(cityObj));
-      // const questionAboutCity =
       // Обработка событий в зависимости от значения callback_data
       switch (action) {
         case "kurs":
@@ -92,7 +91,9 @@ class NewBot {
         case "actual":
           // console.log(action, chatId);
           break;
-        case "again":
+        case "about":
+          let msg = this.sendAboutInfo(userLanguage)
+          bot.sendMessage(userId,msg);
           // console.log(action, chatId);
           break;
         default:
@@ -213,6 +214,27 @@ class NewBot {
       console.error("Произошла ошибка при сохранении пользователя:", error);
     }
   }
+  kantorMenu(language) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
+    const kursText = questions[language].options[0];
+    const contactText = questions[language].options[1];
+    const actualText = questions[language].options[2];
+    const startOverText = questions[language].options[3];
+
+    return {
+      inline_keyboard: [
+        [
+          { text: kursText, callback_data: "kurs" },
+          { text: contactText, callback_data: "contact" },
+        ],
+        [
+          { text: actualText, callback_data: "actual" },
+          { text: startOverText, callback_data: "about" },
+        ],
+      ],
+    };
+  }
   sendCurrentRate(rate, userId) {
     const buttons = Object.entries(rate).map(([currency, rates]) => {
       let buttonLabel = "";
@@ -305,27 +327,6 @@ class NewBot {
         break;
     }
   }
-  kantorMenu(language) {
-    const questionsData = fs.readFileSync("questions.json");
-    const questions = JSON.parse(questionsData);
-    const kursText = questions[language].options[0];
-    const contactText = questions[language].options[1];
-    const actualText = questions[language].options[2];
-    const startOverText = questions[language].options[3];
-
-    return {
-      inline_keyboard: [
-        [
-          { text: kursText, callback_data: "kurs" },
-          { text: contactText, callback_data: "contact" },
-        ],
-        [
-          { text: actualText, callback_data: "actual" },
-          { text: startOverText, callback_data: "again" },
-        ],
-      ],
-    };
-  }
   selectCity(userLanguage) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
@@ -343,7 +344,6 @@ class NewBot {
     }
     return { inline_keyboard: inlineKeyboard };
   }
-
   selectCityForContact(userLanguage) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
@@ -384,6 +384,10 @@ class NewBot {
     };
 
     return flagEmojis[countryCode] || "";
+  }
+  sendAboutInfo(language){
+    const AboutMSG = questions.aboutUs[language];
+  return AboutMSG;
   }
   // languageButtons() {
   //   return JSON.stringify({
