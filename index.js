@@ -10,7 +10,7 @@ class NewBot {
   constructor() {
     this.usersBaseFilePath = "usersBase.json";
   }
-  async currentCource(city, userId) {//! надо менять cityUrl на города что могут быть там или нихуя не будет работать
+  async currentCource(city, userId) {
     // console.log(city+ 'пришел в валютник');
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
@@ -67,15 +67,17 @@ class NewBot {
       const usersBaseData = fs.readFileSync("usersBase.json");
       const usersBase = JSON.parse(usersBaseData);
       const user = usersBase.find((user) => user.userId === userId);
+      const userLanguage = user.language;
 
       const questionsData = fs.readFileSync("questions.json");
       const questions = JSON.parse(questionsData);
-      const userLanguage = user.language;
 
       const messageCity = questions[userLanguage].city;
       const messageContactQuestion = questions[userLanguage].contactQuestion;
       const ALL_citiesJSON = questions.citiesLanguage;
-      const citiesKeys = ALL_citiesJSON.flatMap((cityObj) => Object.values(cityObj));
+      const citiesKeys = ALL_citiesJSON.flatMap((cityObj) =>
+        Object.values(cityObj)
+      );
       // Обработка событий в зависимости от значения callback_data
       switch (action) {
         case "kurs":
@@ -92,14 +94,13 @@ class NewBot {
           // console.log(action, chatId);
           break;
         case "about":
-          let msg = this.sendAboutInfo(userLanguage)
-          bot.sendMessage(userId,msg);
+          let msg = this.sendAboutInfo(userLanguage);
+          bot.sendMessage(userId, msg);
           // console.log(action, chatId);
           break;
         default:
           if (citiesKeys.includes(action)) {
             this.currentCource(action, userId);
-
           }
           if (citiesKeys.includes(action) + "Tel") {
             // console.log(action);
@@ -236,6 +237,11 @@ class NewBot {
     };
   }
   sendCurrentRate(rate, userId) {
+    const usersBaseData = fs.readFileSync("usersBase.json");
+    const usersBase = JSON.parse(usersBaseData);
+    const user = usersBase.find((user) => user.userId === userId);
+    const language = user.language;
+    
     const buttons = Object.entries(rate).map(([currency, rates]) => {
       let buttonLabel = "";
       // Добавляем эмодзи флага страны и код валюты
@@ -248,7 +254,12 @@ class NewBot {
     });
 
     // Отправляем сообщение с кнопками пользователю
-    bot.sendMessage(userId, "Актуальный курс на данный момент:", {
+    const actualCurseMsg = {
+      ru: "Актуальный курс на данный момент:",
+      en: "Current exchange rate at the moment:",
+      pl: "Aktualny kurs na chwilę obecną:",
+    };
+    bot.sendMessage(userId, actualCurseMsg[language], {
       reply_markup: JSON.stringify({ inline_keyboard: buttons }),
     });
 
@@ -258,67 +269,69 @@ class NewBot {
   }
   sendContactsForUser(action, userId) {
     // console.log("соси письку", action);
-    switch (action) {//!эти кейсы тоже надо думать
+    switch (
+      action //!эти кейсы тоже надо думать
+    ) {
       case "KrakowTel":
       case "КраковTel":
-        case "KrakówTel":
+      case "KrakówTel":
         bot.sendContact(userId, "+1231231231", "Manager Krakow");
 
         break;
-        case "WrocławTel":
-          case "ВроцлавTel":
+      case "WrocławTel":
+      case "ВроцлавTel":
       case "WroclawTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "PrzemyslTel":
-        case "PrzemyślTel":
-          case "ПшемысльTel":
+      case "PrzemyślTel":
+      case "ПшемысльTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "GdanskTel":
-        case "GdańskTel":
-          case "ГданьскTel":
+      case "GdańskTel":
+      case "ГданьскTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "LodzTel":
-        case "ŁódźTel":
-          case "ЛодзьTel":
+      case "ŁódźTel":
+      case "ЛодзьTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "WarszawaTel":
-        case "ВаршаваTel":
+      case "ВаршаваTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "KrakowPKPTel":
-        case "Kraków PKPTel":
-          case "Краков ПКПTel":
+      case "Kraków PKPTel":
+      case "Краков ПКПTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "RzeszowTel":
-        case "RzeszówTel":
-          case "ЖешувTel":
+      case "RzeszówTel":
+      case "ЖешувTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "PoznanTel":
-        case "PoznańTel":
-          case "ПознаньTel":
+      case "PoznańTel":
+      case "ПознаньTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "LublinTel":
-        case "ЛюблинTel":
+      case "ЛюблинTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
       case "SzczecinTel":
-        case "ЩецинTel":
+      case "ЩецинTel":
         bot.sendContact(userId, "+1234567890", "Don Perdole");
 
         break;
@@ -332,7 +345,7 @@ class NewBot {
     const questions = JSON.parse(questionsData);
 
     const citiesData = questions.citiesLanguage;
-    const cities = citiesData.flatMap((cityObj) =>  cityObj[userLanguage]);
+    const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
     const buttons = cities.map((city) => ({
       text: city,
       callback_data: city, // или можно указать другие данные обратного вызова, если это необходимо
@@ -352,7 +365,7 @@ class NewBot {
     const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
     const buttons = cities.map((city) => ({
       text: city,
-      callback_data: city+"Tel", // или можно указать другие данные обратного вызова, если это необходимо
+      callback_data: city + "Tel", // или можно указать другие данные обратного вызова, если это необходимо
     }));
     // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
     const inlineKeyboard = [];
@@ -385,9 +398,9 @@ class NewBot {
 
     return flagEmojis[countryCode] || "";
   }
-  sendAboutInfo(language){
+  sendAboutInfo(language) {
     const AboutMSG = questions.aboutUs[language];
-  return AboutMSG;
+    return AboutMSG;
   }
   // languageButtons() {
   //   return JSON.stringify({
