@@ -91,6 +91,7 @@ class NewBot {
           });
           break;
         case "actual":
+          bot.sendMessage(userId, this.actualMultitul(userLanguage), { parse_mode: 'HTML' });
           // console.log(action, chatId);
           break;
         case "about":
@@ -241,7 +242,7 @@ class NewBot {
     const usersBase = JSON.parse(usersBaseData);
     const user = usersBase.find((user) => user.userId === userId);
     const language = user.language;
-    
+
     const buttons = Object.entries(rate).map(([currency, rates]) => {
       let buttonLabel = "";
       // Добавляем эмодзи флага страны и код валюты
@@ -401,6 +402,17 @@ class NewBot {
   sendAboutInfo(language) {
     const AboutMSG = questions.aboutUs[language];
     return AboutMSG;
+  }
+  actualMultitul(language){
+    return this.firstNewsPaper(language)
+  }
+  firstNewsPaper(language){
+    const paymentInfo = {
+      ru: "<b>Оплата картой</b> 💳\nУважаемые клиенты, с радостью сообщаем вам, что теперь вы можете обменивать свои деньги с помощью банковской карты.\nЭта транзакция будет включать минимальную плату:\nПольская карта - 1,0% от курса продажи\nИностранная карта - 3,0% от курса продажи\n(Лимит единиц транзакций 1000)",
+      en: "<b>Card Payment</b> 💳\nDear Customers, we are pleased to inform you that you can now exchange your money using a debit/credit card.\nThis transaction will incur a minimum fee:\nPolish card - 1.0% to the selling rate\nForeign card - 3.0% to the selling rate\n(Transaction units limit 1000)",
+      pl: "<b>Płatność kartą</b> 💳\nSzanowni Klienci, z przyjemnością informujemy, że od teraz możesz wymieniać swoje pieniądze za pomocą karty płatniczej.\nTa transakcja będzie podlegać minimalnej opłacie:\nKarta polska - 1,0% do kursu sprzedaży\nKarta zagraniczna - 3,0% do kursu sprzedaży\n(Limit jednostek transakcji 1000)"
+    };
+    return paymentInfo[language];
   }
   // languageButtons() {
   //   return JSON.stringify({
