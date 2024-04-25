@@ -9,7 +9,12 @@ let language = "";
 class NewBot {
   constructor() {
     this.usersBaseFilePath = "usersBase.json";
+    bot.setMyCommands([
+      { command: "/start", description: "Menu" },
+      { command: "/contact", description: "Contacts" },
+    ]);
   }
+
   async currentCource(city, userId) {
     // console.log(city+ 'пришел в валютник');
     const questionsData = fs.readFileSync("questions.json");
@@ -46,21 +51,32 @@ class NewBot {
   commands() {
     bot.on("message", (userInput) => {
       const text = userInput.text;
-      const chatId = userInput.chat.id;
+      const chatId = userInput.from.id;
       const userLanguage = userInput.from.language_code;
       switch (text) {
         case "/start":
+        case "/start@SuperKantorBot":
           // console.log(userInput.from.language_code);
           this.saveUser(userInput);
           this.gotoPrivateChat(userInput);
           break;
-
+        case "/contact":
+        case "/contact@SuperKantorBot":
+          const questionsData = fs.readFileSync("questions.json");
+          const questions = JSON.parse(questionsData);
+          const messageContactQuestion =
+            questions[userLanguage].contactQuestion;
+          bot.sendMessage(chatId, messageContactQuestion, {
+            reply_markup: this.selectCityForContact(userLanguage),
+          });
+          break;
         default:
           break;
       }
     });
     bot.on("callback_query", (callbackQuery) => {
       const action = callbackQuery.data;
+      console.log(action);
       const chatId = callbackQuery.message.chat.id;
       const userId = callbackQuery.from.id;
 
@@ -91,13 +107,21 @@ class NewBot {
           });
           break;
         case "actual":
-          bot.sendMessage(userId, this.actualMultitul(userLanguage), { parse_mode: 'HTML' });
-          // console.log(action, chatId);
+          bot.sendMessage(userId, this.actualMultitul(userLanguage), {
+            parse_mode: "HTML",
+          });
+          console.log(action, chatId);
           break;
         case "about":
           let msg = this.sendAboutInfo(userLanguage);
           bot.sendMessage(userId, msg);
           // console.log(action, chatId);
+          break;
+        case "address":
+          console.log(action, chatId);
+          bot.sendMessage(userId, messageCity, {
+            reply_markup: this.sendAddressMenu(userLanguage),
+          });
           break;
         default:
           if (citiesKeys.includes(action)) {
@@ -107,7 +131,30 @@ class NewBot {
             // console.log(action);
             this.sendContactsForUser(action, userId);
           }
+          if (citiesKeys.includes(action) + "ADD") {
+            console.log(action);
+            this.sendAddressMSG(action, userId);
+          }
           break;
+      }
+    });
+
+    // Обработка каждого сообщения в чате
+    bot.onText(/.*/, (msg) => {
+      const chatId = -1002111886632; // ID чата, из которого нужно удалять сообщения
+      const messagesToDelete = [
+        "/contact@SuperKantorBot",
+        "/start@SuperKantorBot",
+        "/contact",
+        "/start",
+      ];
+      const message = msg.text;
+      const messageId = msg.message_id;
+
+      if (chatId === msg.chat.id && messagesToDelete.includes(message)) {
+        bot.deleteMessage(chatId, messageId).catch((error) => {
+          console.error("Error deleting message:", error.response.body);
+        });
       }
     });
   }
@@ -223,6 +270,7 @@ class NewBot {
     const contactText = questions[language].options[1];
     const actualText = questions[language].options[2];
     const startOverText = questions[language].options[3];
+    const addresses = questions[language].options[4];
 
     return {
       inline_keyboard: [
@@ -234,8 +282,152 @@ class NewBot {
           { text: actualText, callback_data: "actual" },
           { text: startOverText, callback_data: "about" },
         ],
+        [{ text: addresses, callback_data: "address" }],
       ],
     };
+  }
+  sendAddressMenu(userLanguage) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
+
+    const citiesData = questions.citiesLanguage;
+    const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
+    const buttons = cities.map((city) => ({
+      text: city,
+      callback_data: city + "ADD", // или можно указать другие данные обратного вызова, если это необходимо
+    }));
+    // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
+    const inlineKeyboard = [];
+    for (let i = 0; i < buttons.length; i += 3) {
+      inlineKeyboard.push(buttons.slice(i, i + 3));
+    }
+    return { inline_keyboard: inlineKeyboard };
+  }
+  sendAddressMSG(action, userId) {
+    switch (action) {
+      case "KrakowADD":
+      case "КраковADD":
+      case "KrakówADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+
+      case "WrocławADD":
+      case "ВроцлавADD":
+      case "WroclawADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Wrocław</b>\n \n<b>email</b> 📬: kantor1913.wroclaw1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "PrzemyslADD":
+      case "PrzemyślADD":
+      case "ПшемысльADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Przemyśl</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "GdanskADD":
+      case "GdańskADD":
+      case "ГданьскADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Gdańsk</b>\n \n<b>email</b> 📬: kantor1913.gdansk1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "LodzADD":
+      case "ŁódźADD":
+      case "ЛодзьADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Łódź</b>\n \n<b>email</b> 📬: kantor1913.lodz1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "WarszawaADD":
+      case "ВаршаваADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Warszawa</b>\n \n<b>email</b> 📬: kantor1913.warszawa1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "KrakowPKPADD":
+      case "Kraków PKPADD":
+      case "Краков ПКПADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Kraków (PKP)</b>\n \n<b>email</b> 📬: kantor1913.krakow2@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "RzeszowADD":
+      case "RzeszówADD":
+      case "ЖешувADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Rzeszów</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "PoznanADD":
+      case "PoznańADD":
+      case "ПознаньADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "LublinADD":
+      case "ЛюблинADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+      case "SzczecinADD":
+      case "ЩецинADD":
+        bot.sendMessage(
+          userId,
+          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          {
+            parse_mode: "HTML",
+          }
+        );
+        break;
+
+      default:
+        break;
+    }
   }
   sendCurrentRate(rate, userId) {
     const usersBaseData = fs.readFileSync("usersBase.json");
@@ -269,10 +461,7 @@ class NewBot {
     return JSON.stringify({ inline_keyboard: buttons });
   }
   sendContactsForUser(action, userId) {
-    // console.log("соси письку", action);
-    switch (
-      action //!эти кейсы тоже надо думать
-    ) {
+    switch (action) {
       case "KrakowTel":
       case "КраковTel":
       case "KrakówTel":
@@ -403,14 +592,14 @@ class NewBot {
     const AboutMSG = questions.aboutUs[language];
     return AboutMSG;
   }
-  actualMultitul(language){
-    return this.firstNewsPaper(language)
+  actualMultitul(language) {
+    return this.firstNewsPaper(language);
   }
-  firstNewsPaper(language){
+  firstNewsPaper(language) {
     const paymentInfo = {
       ru: "<b>Оплата картой</b> 💳\nУважаемые клиенты, с радостью сообщаем вам, что теперь вы можете обменивать свои деньги с помощью банковской карты.\nЭта транзакция будет включать минимальную плату:\nПольская карта - 1,0% от курса продажи\nИностранная карта - 3,0% от курса продажи\n(Лимит единиц транзакций 1000)",
       en: "<b>Card Payment</b> 💳\nDear Customers, we are pleased to inform you that you can now exchange your money using a debit/credit card.\nThis transaction will incur a minimum fee:\nPolish card - 1.0% to the selling rate\nForeign card - 3.0% to the selling rate\n(Transaction units limit 1000)",
-      pl: "<b>Płatność kartą</b> 💳\nSzanowni Klienci, z przyjemnością informujemy, że od teraz możesz wymieniać swoje pieniądze za pomocą karty płatniczej.\nTa transakcja będzie podlegać minimalnej opłacie:\nKarta polska - 1,0% do kursu sprzedaży\nKarta zagraniczna - 3,0% do kursu sprzedaży\n(Limit jednostek transakcji 1000)"
+      pl: "<b>Płatność kartą</b> 💳\nSzanowni Klienci, z przyjemnością informujemy, że od teraz możesz wymieniać swoje pieniądze za pomocą karty płatniczej.\nTa transakcja będzie podlegać minimalnej opłacie:\nKarta polska - 1,0% do kursu sprzedaży\nKarta zagraniczna - 3,0% do kursu sprzedaży\n(Limit jednostek transakcji 1000)",
     };
     return paymentInfo[language];
   }
