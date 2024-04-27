@@ -18,7 +18,7 @@ class NewBot {
   }
 
   async currentCource(city, userId) {
-    // console.log(city+ 'пришел в валютник');
+
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
     const cityURL = questions.cityURL[city];
@@ -44,7 +44,7 @@ class NewBot {
         currencyRates[currencyId][exchangeType] = content;
       });
 
-      // console.log(currencyRates); //!JSON!
+
       this.sendCurrentRate(currencyRates, userId, city);
     } catch (error) {
       console.error("Произошла ошибка:", error);
@@ -53,7 +53,7 @@ class NewBot {
   commands() {
     bot.on("message", (userInput) => {
       const text = userInput.text;
-      // console.log(text);
+
       const chatId = userInput.from.id;
       const userId = userInput.from.id;
       const usersBaseData = fs.readFileSync("usersBase.json");
@@ -63,16 +63,19 @@ class NewBot {
       switch (text) {
         case "/start":
         case "/start@SuperKantorBot":
-          FLAGKURS = false;
-          FLAGCONTACTS = false;
-          this.KONTROL_PANEL(userInput, text, userLanguage);
+          if(user){
+            console.log('а тут нахуя работает?');
+            FLAGKURS = false;
+            FLAGCONTACTS = false;
+            this.KONTROL_PANEL(userInput, text, userLanguage);
+          }
+
           // this.KONTROL_PANEL(userInput,text);
-          // console.log(userInput.from.language_code);
           // находим пользователя
 
           if (!user) {
             //чекаем есть ли юзер в базе данных
-
+            console.log('тут работает');
             this.setLanguageMenu(userInput);
           }
           this.gotoPrivateChat(userInput);
@@ -94,7 +97,7 @@ class NewBot {
       }
     });
     bot.on("callback_query", (callbackQuery) => {
-      console.log(callbackQuery);
+
       const action = callbackQuery.data;
       const chatId = callbackQuery.message.chat.id;
       const userId = callbackQuery.from.id;
@@ -106,7 +109,7 @@ class NewBot {
 
       const questionsData = fs.readFileSync("questions.json");
       const questions = JSON.parse(questionsData);
-      console.log(action);
+
 
       const messageCity = questions[userLanguage].city;
       const messageContactQuestion = questions[userLanguage].contactQuestion;
@@ -130,15 +133,15 @@ class NewBot {
           bot.sendMessage(userId, this.actualMultitul(userLanguage), {
             parse_mode: "HTML",
           });
-          console.log(action, chatId);
+
           break;
         case "about":
           let msg = this.sendAboutInfo(userLanguage);
           bot.sendMessage(userId, msg);
-          // console.log(action, chatId);
+
           break;
         case "address":
-          console.log(action, chatId);
+
           bot.sendMessage(userId, messageCity, {
             reply_markup: this.sendAddressMenu(userLanguage),
           });
@@ -148,11 +151,9 @@ class NewBot {
             this.currentCource(action, userId);
           }
           if (citiesKeys.includes(action) + "Tel") {
-            // console.log(action);
             this.sendContactsForUser(action, userId);
           }
           if (citiesKeys.includes(action) + "ADD") {
-            console.log(action);
             this.sendAddressMSG(action, userId);
           }
           break;
@@ -220,6 +221,7 @@ class NewBot {
     }
   }
   setLanguageMenu(userInput) {
+    console.log(userInput);
     const keyboard = [
       [{ text: "🇺🇸 English" }, { text: "🇵🇱 Polska" }, { text: "🇷🇺 Русский" }],
     ];
@@ -276,7 +278,6 @@ class NewBot {
     }
   }
   saveUser(userInput, languageCode) {
-    console.log(languageCode + " save работает");
     try {
       const { first_name, last_name, username, id } = userInput.from;
       const userId = id;
@@ -339,27 +340,7 @@ class NewBot {
       console.error("Произошла ошибка при сохранении пользователя:", error);
     }
   }
-  // sendKeyboard(userInput){
-  // const keyboard = [
-  //     [{ text: 'Button 1', callback_data: 'button1' },{ text: 'Button 2', callback_data: 'button2' }]
-  // ];
-  //   const chatId = userInput.chat.id;
 
-  //       // Отправка сообщения с клавиатурой
-  //       bot.sendMessage(chatId, 'Выберите действие:', {
-  //           reply_markup: {
-  //               keyboard: keyboard,
-  //               resize_keyboard: true,  // Можете убрать, если не требуется
-  //               one_time_keyboard: true  // Можете убрать, если не требуется
-  //           }
-  //       })
-  //       .then(() => {
-  //           console.log('Клавиатура успешно отправлена.');
-  //       })
-  //       .catch((error) => {
-  //           console.error('Ошибка при отправке клавиатуры:', error);
-  //       });
-  //   } //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   kantorMenu(language) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
@@ -550,8 +531,7 @@ class NewBot {
     bot.sendMessage(userId, actualCurseMsg[language], {
       reply_markup: JSON.stringify({ inline_keyboard: buttons }),
     });
-    // Возвращаем массив кнопок
-    // console.log(JSON.stringify({ inline_keyboard: buttons }));
+
     return JSON.stringify({ inline_keyboard: buttons });
   }
   sendContactsForUser(text, userId) {
@@ -671,7 +651,7 @@ class NewBot {
     });
   }
   selectCityForContact(userLanguage, userInput) {
-    console.log(userLanguage);
+
     const chatId = userInput.chat.id;
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
