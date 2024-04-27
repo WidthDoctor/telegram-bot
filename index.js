@@ -5,6 +5,8 @@ const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
 const cheerio = require("cheerio");
 const questions = require("./questions.json");
+let FLAGKURS = false;
+let FLAGCONTACTS = false;
 let language = "";
 class NewBot {
   constructor() {
@@ -43,7 +45,7 @@ class NewBot {
       });
 
       // console.log(currencyRates); //!JSON!
-      this.sendCurrentRate(currencyRates, userId);
+      this.sendCurrentRate(currencyRates, userId, city);
     } catch (error) {
       console.error("Произошла ошибка:", error);
     }
@@ -53,21 +55,26 @@ class NewBot {
       const text = userInput.text;
       // console.log(text);
       const chatId = userInput.from.id;
-      const userLanguage = userInput.from.language_code;
-      switch (text) {
-        case "/start":
-          case "/start@SuperKantorBot":
-            // this.KONTROL_PANEL(userInput,text);
-          // console.log(userInput.from.language_code);
-                // находим пользователя
       const userId = userInput.from.id;
       const usersBaseData = fs.readFileSync("usersBase.json");
       const usersBase = JSON.parse(usersBaseData);
       const user = usersBase.find((user) => user.userId === userId);
-      if (!user) {//чекаем есть ли юзер в базе данных
+      const userLanguage = user.language;
+      switch (text) {
+        case "/start":
+        case "/start@SuperKantorBot":
+          FLAGKURS = false;
+          FLAGCONTACTS = false;
+          this.KONTROL_PANEL(userInput, text, userLanguage);
+          // this.KONTROL_PANEL(userInput,text);
+          // console.log(userInput.from.language_code);
+          // находим пользователя
 
-        this.setLanguageMenu(userInput);
-      }
+          if (!user) {
+            //чекаем есть ли юзер в базе данных
+
+            this.setLanguageMenu(userInput);
+          }
           this.gotoPrivateChat(userInput);
 
           break;
@@ -82,7 +89,7 @@ class NewBot {
           });
           break;
         default:
-          this.KONTROL_PANEL(userInput,text);
+          this.KONTROL_PANEL(userInput, text, userLanguage);
           break;
       }
     });
@@ -169,52 +176,71 @@ class NewBot {
       }
     });
   }
-  KONTROL_PANEL(userInput,text){
+  KONTROL_PANEL(userInput, text, userLanguage) {
+    const ALL_citiesJSON = questions.citiesLanguage;
+    const citiesKeys = ALL_citiesJSON.flatMap((cityObj) =>
+      Object.values(cityObj)
+    );
+    const userId = userInput.from.id;
     // console.log(text + ' вот шляпа');
     switch (text) {
-      case '🇷🇺 Русский':
-          this.saveUser(userInput, 'ru');
-          break;
-      case '🇺🇸 English':
-          console.log('Выбран язык 🇺🇸 ' + text);
-          this.saveUser(userInput, 'en');
-          break;
-      case '🇵🇱 Polska':
-          console.log('Выбран язык 🇵🇱 ' + text);
-          this.saveUser(userInput, 'pl');
-          break;
-        case text.match(/💱/i) ? text : null:
-      console.log('да это ебать курс валют');
+      case "🇷🇺 Русский":
+        this.saveUser(userInput, "ru");
+        break;
+      case "🇺🇸 English":
+        console.log("Выбран язык 🇺🇸 " + text);
+        this.saveUser(userInput, "en");
+        break;
+      case "🇵🇱 Polska":
+        console.log("Выбран язык 🇵🇱 " + text);
+        this.saveUser(userInput, "pl");
+        break;
+      case text.match(/💱/i) ? text : null:
+        FLAGKURS = true;
+        FLAGCONTACTS = false;
+        this.selectCity(userLanguage, userInput);
+        console.log("да это ебать курс валют");
+        break;
+      case text.match(/📨/i) ? text : null:
+        FLAGKURS = false;
+        FLAGCONTACTS = true;
+        this.selectCityForContact(userLanguage, userInput);
+        console.log("да это ебать контакты");
         break;
       default:
-          break;
-  }
-}
-  setLanguageMenu(userInput){
-    const keyboard = [
-      [
-        { text: '🇺🇸 English'},
-        { text: '🇵🇱 Polska'},
-        { text: '🇷🇺 Русский'}
-      ]
-  ];
-        const chatId = userInput.chat.id;
-
-            // Отправка сообщения с клавиатурой
-            bot.sendMessage(chatId, 'Choose a language:', {
-                reply_markup: {
-                    keyboard: keyboard,
-                    resize_keyboard: true,  // Можете убрать, если не требуется
-                    one_time_keyboard: true  // Можете убрать, если не требуется
-                }
-            })
-            .then(() => {
-                console.log('Клавиатура успешно отправлена.');
-            })
-            .catch((error) => {
-                console.error('Ошибка при отправке клавиатуры:', error);
-            });
+        if (citiesKeys.includes(text) && FLAGKURS === true) {
+          this.currentCource(text, userId);
+          console.log("сработал курс валют");
         }
+        if (citiesKeys.includes(text) && FLAGCONTACTS === true) {
+          this.sendContactsForUser(text, userId);
+          console.log("сработал отправка контакта");
+        }
+        break;
+    }
+  }
+  setLanguageMenu(userInput) {
+    const keyboard = [
+      [{ text: "🇺🇸 English" }, { text: "🇵🇱 Polska" }, { text: "🇷🇺 Русский" }],
+    ];
+    const chatId = userInput.chat.id;
+
+    // Отправка сообщения с клавиатурой
+    bot
+      .sendMessage(chatId, "Choose a language:", {
+        reply_markup: {
+          keyboard: keyboard,
+          resize_keyboard: true, // Можете убрать, если не требуется
+          one_time_keyboard: true, // Можете убрать, если не требуется
+        },
+      })
+      .then(() => {
+        console.log("Клавиатура успешно отправлена.");
+      })
+      .catch((error) => {
+        console.error("Ошибка при отправке клавиатуры:", error);
+      });
+  }
   async gotoPrivateChat(userInput) {
     try {
       const chatId = userInput.chat.id;
@@ -224,7 +250,6 @@ class NewBot {
       const usersBaseData = fs.readFileSync("usersBase.json");
       const usersBase = JSON.parse(usersBaseData);
       const user = usersBase.find((user) => user.userId === userId);
-
 
       if (!user) {
         return; // Прерываем выполнение функции, если пользователь не найден в базе данных
@@ -251,66 +276,71 @@ class NewBot {
     }
   }
   saveUser(userInput, languageCode) {
-    console.log(languageCode + ' save работает');
+    console.log(languageCode + " save работает");
     try {
-        const { first_name, last_name, username, id } = userInput.from;
-        const userId = id;
+      const { first_name, last_name, username, id } = userInput.from;
+      const userId = id;
 
-        // Проверяем существует ли файл JSON и читаем его содержимое
-        let usersBase = [];
-        const usersBaseFilePath = "usersBase.json";
+      // Проверяем существует ли файл JSON и читаем его содержимое
+      let usersBase = [];
+      const usersBaseFilePath = "usersBase.json";
 
-        if (fs.existsSync(usersBaseFilePath)) {
-            const usersBaseData = fs.readFileSync(usersBaseFilePath, 'utf8');
+      if (fs.existsSync(usersBaseFilePath)) {
+        const usersBaseData = fs.readFileSync(usersBaseFilePath, "utf8");
 
-            // Проверяем, не пуст ли файл JSON
-            if (usersBaseData.length > 0) {
-                usersBase = JSON.parse(usersBaseData);
-            }
+        // Проверяем, не пуст ли файл JSON
+        if (usersBaseData.length > 0) {
+          usersBase = JSON.parse(usersBaseData);
         }
+      }
 
-        // Проверяем, есть ли уже пользователь с таким userId
-        const existingUserIndex = usersBase.findIndex((user) => user.userId === userId);
-        if (existingUserIndex !== -1) {
-            // Проверяем, есть ли изменения в данных пользователя
-            const existingUser = usersBase[existingUserIndex];
-            const updatedUser = {
-                username: username || first_name || last_name || "Unknown",
-                userId,
-                language: languageCode
-            };
+      // Проверяем, есть ли уже пользователь с таким userId
+      const existingUserIndex = usersBase.findIndex(
+        (user) => user.userId === userId
+      );
+      if (existingUserIndex !== -1) {
+        // Проверяем, есть ли изменения в данных пользователя
+        const existingUser = usersBase[existingUserIndex];
+        const updatedUser = {
+          username: username || first_name || last_name || "Unknown",
+          userId,
+          language: languageCode,
+        };
 
-            // Если есть изменения, обновляем данные пользователя в базе данных
-            if (
-                existingUser.username !== updatedUser.username ||
-                existingUser.language !== updatedUser.language
-            ) {
-                usersBase[existingUserIndex] = updatedUser;
+        // Если есть изменения, обновляем данные пользователя в базе данных
+        if (
+          existingUser.username !== updatedUser.username ||
+          existingUser.language !== updatedUser.language
+        ) {
+          usersBase[existingUserIndex] = updatedUser;
 
-                // Записываем обновленные данные в файл JSON
-                fs.writeFileSync(usersBaseFilePath, JSON.stringify(usersBase, null, 2));
-                console.log("Данные пользователя успешно обновлены в базе данных.");
-            } else {
-                console.log("Нет изменений в данных пользователя.");
-            }
+          // Записываем обновленные данные в файл JSON
+          fs.writeFileSync(
+            usersBaseFilePath,
+            JSON.stringify(usersBase, null, 2)
+          );
+          console.log("Данные пользователя успешно обновлены в базе данных.");
         } else {
-            // Добавление нового пользователя в массив
-            usersBase.push({
-                username: username || first_name || last_name || "Unknown",
-                userId,
-                language: languageCode
-            });
-
-            // Запись обновленных данных в файл JSON
-            fs.writeFileSync(usersBaseFilePath, JSON.stringify(usersBase, null, 2));
-            console.log("Пользователь успешно добавлен в базу данных.");
+          console.log("Нет изменений в данных пользователя.");
         }
+      } else {
+        // Добавление нового пользователя в массив
+        usersBase.push({
+          username: username || first_name || last_name || "Unknown",
+          userId,
+          language: languageCode,
+        });
+
+        // Запись обновленных данных в файл JSON
+        fs.writeFileSync(usersBaseFilePath, JSON.stringify(usersBase, null, 2));
+        console.log("Пользователь успешно добавлен в базу данных.");
+      }
     } catch (error) {
-        console.error("Произошла ошибка при сохранении пользователя:", error);
+      console.error("Произошла ошибка при сохранении пользователя:", error);
     }
-}
+  }
   // sendKeyboard(userInput){
-    // const keyboard = [
+  // const keyboard = [
   //     [{ text: 'Button 1', callback_data: 'button1' },{ text: 'Button 2', callback_data: 'button2' }]
   // ];
   //   const chatId = userInput.chat.id;
@@ -333,26 +363,20 @@ class NewBot {
   kantorMenu(language) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
-    const kursText = "💱 "+questions[language].options[0];
-    const contactText = "📨 "+questions[language].options[1];
-    const actualText = "📈 "+questions[language].options[2];
-    const startOverText = "ℹ️ "+questions[language].options[3];
-    const addresses = "📍 "+ questions[language].options[4];
+    const kursText = "💱 " + questions[language].options[0];
+    const contactText = "📨 " + questions[language].options[1];
+    const actualText = "📈 " + questions[language].options[2];
+    const startOverText = "ℹ️ " + questions[language].options[3];
+    const addresses = "📍 " + questions[language].options[4];
 
     return {
       keyboard: [
-        [
-          { text: kursText},
-          { text: contactText},
-        ],
-        [
-          { text: actualText},
-          { text: startOverText},
-        ],
-        [{ text:addresses}],
+        [{ text: kursText }, { text: contactText }],
+        [{ text: actualText }, { text: startOverText }],
+        [{ text: addresses }],
       ],
-      resize_keyboard: true,  // Можете убрать, если не требуется
-      one_time_keyboard: true
+      resize_keyboard: true, // Можете убрать, если не требуется
+      one_time_keyboard: true,
     };
   }
   sendAddressMenu(userLanguage) {
@@ -498,7 +522,7 @@ class NewBot {
         break;
     }
   }
-  sendCurrentRate(rate, userId) {
+  sendCurrentRate(rate, userId, text) {
     const usersBaseData = fs.readFileSync("usersBase.json");
     const usersBase = JSON.parse(usersBaseData);
     const user = usersBase.find((user) => user.userId === userId);
@@ -512,7 +536,7 @@ class NewBot {
       if (rates.dk && rates.ds) {
         buttonLabel += ` —    💵 ${rates.dk} 💴 ${rates.ds}`;
       }
-      return [{ text: buttonLabel, callback_data: currency }];
+      return [{ text: buttonLabel, callback_data:'kek' }];
     });
 
     // Отправляем сообщение с кнопками пользователю
@@ -521,117 +545,154 @@ class NewBot {
       en: "Current exchange rate at the moment:",
       pl: "Aktualny kurs na chwilę obecną:",
     };
+    this.sendContactsForUser(text,userId)
+    //!TODO тут первая кнопка связь с менеджером долэны быть вызовом функции
     bot.sendMessage(userId, actualCurseMsg[language], {
       reply_markup: JSON.stringify({ inline_keyboard: buttons }),
     });
-
     // Возвращаем массив кнопок
     // console.log(JSON.stringify({ inline_keyboard: buttons }));
     return JSON.stringify({ inline_keyboard: buttons });
   }
-  sendContactsForUser(action, userId) {
-    switch (action) {
-      case "KrakowTel":
-      case "КраковTel":
-      case "KrakówTel":
-        bot.sendContact(userId, "+1231231231", "Manager Krakow");
-
+  sendContactsForUser(text, userId) {
+    const usersBaseData = fs.readFileSync("usersBase.json");
+    const usersBase = JSON.parse(usersBaseData);
+    const user = usersBase.find((user) => user.userId === userId);
+    const language = user.language;
+    let phoneNumber, contactName;
+    switch (text) {
+      case "Krakow":
+      case "Краков":
+      case "Kraków":
+        phoneNumber = "+48500560146"; // Номер телефона для отправки сообщения
+        contactName = "Don Perdole";
         break;
-      case "WrocławTel":
-      case "ВроцлавTel":
-      case "WroclawTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
 
+      case "Wrocław":
+      case "Вроцлав":
+      case "Wroclaw":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "PrzemyslTel":
-      case "PrzemyślTel":
-      case "ПшемысльTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Przemysl":
+      case "Przemyśl":
+      case "Пшемысль":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "GdanskTel":
-      case "GdańskTel":
-      case "ГданьскTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Gdansk":
+      case "Gdańsk":
+      case "Гданьск":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "LodzTel":
-      case "ŁódźTel":
-      case "ЛодзьTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Lodz":
+      case "Łódź":
+      case "Лодзь":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "WarszawaTel":
-      case "ВаршаваTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Warszawa":
+      case "Варшава":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "KrakowPKPTel":
-      case "Kraków PKPTel":
-      case "Краков ПКПTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "KrakowPKP":
+      case "Kraków PKP":
+      case "Краков ПКП":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "RzeszowTel":
-      case "RzeszówTel":
-      case "ЖешувTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Rzeszow":
+      case "Rzeszów":
+      case "Жешув":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "PoznanTel":
-      case "PoznańTel":
-      case "ПознаньTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Poznan":
+      case "Poznań":
+      case "Познань":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "LublinTel":
-      case "ЛюблинTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Lublin":
+      case "Люблин":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
-      case "SzczecinTel":
-      case "ЩецинTel":
-        bot.sendContact(userId, "+1234567890", "Don Perdole");
-
+      case "Szczecin":
+      case "Щецин":
+        phoneNumber = "+48500560146";
+        contactName = "Don Perdole";
         break;
 
       default:
         break;
     }
+    const chatUrl = `https://t.me/${phoneNumber}`;
+
+    const keyboard = {
+      inline_keyboard: [
+        [{ text: contactName, url: chatUrl }]
+      ],
+      resize_keyboard: true // Разрешить кнопкам изменять размер для соответствия экрану
+    };
+    const managerText = {
+      'en': "Contact the manager",
+      'ru': "Связь с менеджером",
+      'pl': "Kontakt z menedżerem"
   }
-  selectCity(userLanguage) {
+    bot.sendMessage(userId, managerText[language], {
+      reply_markup: JSON.stringify(keyboard),resize_keyboard: true,
+    });
+  }
+  selectCity(userLanguage, userInput) {
+    console.log(userLanguage);
+    const chatId = userInput.chat.id;
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
-
+    const messageCity = questions[userLanguage].city;
     const citiesData = questions.citiesLanguage;
     const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
     const buttons = cities.map((city) => ({
       text: city,
-      callback_data: city, // или можно указать другие данные обратного вызова, если это необходимо
     }));
     // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
     const inlineKeyboard = [];
     for (let i = 0; i < buttons.length; i += 3) {
       inlineKeyboard.push(buttons.slice(i, i + 3));
     }
-    return { keyboard: inlineKeyboard };
+    bot.sendMessage(chatId, messageCity, {
+      reply_markup: {
+        keyboard: inlineKeyboard,
+        resize_keyboard: true, // Можете убрать, если не требуется
+        one_time_keyboard: true,
+      },
+    });
   }
-  selectCityForContact(userLanguage) {
+  selectCityForContact(userLanguage, userInput) {
+    console.log(userLanguage);
+    const chatId = userInput.chat.id;
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
-
+    const messageCityContact = questions[userLanguage].contactQuestion;
     const citiesData = questions.citiesLanguage;
     const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
     const buttons = cities.map((city) => ({
       text: city,
-      callback_data: city + "Tel", // или можно указать другие данные обратного вызова, если это необходимо
     }));
     // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
     const inlineKeyboard = [];
     for (let i = 0; i < buttons.length; i += 3) {
       inlineKeyboard.push(buttons.slice(i, i + 3));
     }
-    return { inline_keyboard: inlineKeyboard };
+    bot.sendMessage(chatId, messageCityContact, {
+      reply_markup: {
+        keyboard: inlineKeyboard,
+        resize_keyboard: true, // Можете убрать, если не требуется
+        one_time_keyboard: true,
+      },
+    });
   }
   getCountryEmoji(countryCode) {
     // Примеры эмодзи флагов
