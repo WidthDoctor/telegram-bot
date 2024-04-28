@@ -15,6 +15,7 @@ class NewBot {
     bot.setMyCommands([
       { command: "/start", description: "Menu" },
       { command: "/contact", description: "Contacts" },
+      { command: "/language", description: "Change language"},
     ]);
   }
 
@@ -59,6 +60,9 @@ class NewBot {
       const user = usersBase.find((user) => user.userId === userId);
 
       switch (text) {
+        case '/language':
+          this.setLanguageMenu(userInput);
+        break;
         case "/start":
           if (!user) {
             console.log("Пользователь не найден в базе данных");
@@ -73,19 +77,9 @@ class NewBot {
             this.gotoPrivateChat(userInput);
           }
           break;
-        case "/contact":
-        case "/contact@SuperKantorBot":
-          const questionsData = fs.readFileSync("questions.json");
-          const questions = JSON.parse(questionsData);
-          const messageContactQuestion =
-            questions[userLanguage].contactQuestion;
-          bot.sendMessage(chatId, messageContactQuestion, {
-            reply_markup: this.selectCityForContact(userLanguage),
-          });
-          break;
         default:
           this.KONTROL_PANEL_LANGUAGE(userInput, text);
-          this.KONTROL_PANEL_KURS(userInput); //контролка на языки
+          this.KONTROL_PANEL_SECONDMENU(userInput); //контролка на языки
           break;
       }
     });
@@ -207,7 +201,7 @@ class NewBot {
         break;
     }
   }
-  KONTROL_PANEL_KURS(userInput){
+  KONTROL_PANEL_SECONDMENU(userInput){
     const usersBaseData = fs.readFileSync("usersBase.json");
     const text = userInput.text;
     const usersBase = JSON.parse(usersBaseData);
@@ -221,6 +215,7 @@ class NewBot {
         this.selectCity(language, userInput);
         console.log("да это ебать курс валют");
         break;
+        case '/contact':
       case text.match(/📨/i) ? text : null:
         FLAGKURS = false;
         FLAGCONTACTS = true;
@@ -370,23 +365,7 @@ class NewBot {
       one_time_keyboard: true,
     };
   }
-  sendAddressMenu(userLanguage) {
-    const questionsData = fs.readFileSync("questions.json");
-    const questions = JSON.parse(questionsData);
 
-    const citiesData = questions.citiesLanguage;
-    const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
-    const buttons = cities.map((city) => ({
-      text: city,
-      callback_data: city + "ADD", // или можно указать другие данные обратного вызова, если это необходимо
-    }));
-    // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
-    const inlineKeyboard = [];
-    for (let i = 0; i < buttons.length; i += 3) {
-      inlineKeyboard.push(buttons.slice(i, i + 3));
-    }
-    return { inline_keyboard: inlineKeyboard };
-  }
   sendAddressMSG(action, userId) {
     switch (action) {
       case "KrakowADD":
@@ -681,6 +660,23 @@ class NewBot {
         one_time_keyboard: true,
       },
     });
+  }
+  sendAddressMenu(userLanguage) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
+
+    const citiesData = questions.citiesLanguage;
+    const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
+    const buttons = cities.map((city) => ({
+      text: city,
+      callback_data: city + "ADD", // или можно указать другие данные обратного вызова, если это необходимо
+    }));
+
+    const inlineKeyboard = [];
+    for (let i = 0; i < buttons.length; i += 3) {
+      inlineKeyboard.push(buttons.slice(i, i + 3));
+    }
+    return { inline_keyboard: inlineKeyboard };
   }
   getCountryEmoji(countryCode) {
     // Примеры эмодзи флагов
