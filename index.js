@@ -8,6 +8,7 @@ const questions = require("./questions.json");
 
 let FLAGKURS = false;
 let FLAGCONTACTS = false;
+let FLAGADDRESS = false;
 let language = "";
 class NewBot {
   constructor() {
@@ -83,66 +84,6 @@ class NewBot {
           break;
       }
     });
-    bot.on("callback_query", (callbackQuery) => {
-      const action = callbackQuery.data;
-      const chatId = callbackQuery.message.chat.id;
-      const userId = callbackQuery.from.id;
-
-      const usersBaseData = fs.readFileSync("usersBase.json");
-      const usersBase = JSON.parse(usersBaseData);
-      const user = usersBase.find((user) => user.userId === userId);
-      const userLanguage = user.language;
-
-      const questionsData = fs.readFileSync("questions.json");
-      const questions = JSON.parse(questionsData);
-
-      const messageCity = questions[userLanguage].city;
-      const messageContactQuestion = questions[userLanguage].contactQuestion;
-      const ALL_citiesJSON = questions.citiesLanguage;
-      const citiesKeys = ALL_citiesJSON.flatMap((cityObj) =>
-        Object.values(cityObj)
-      );
-      // Обработка событий в зависимости от значения callback_data
-      switch (text) {
-        case "kurs":
-          bot.sendMessage(userId, messageCity, {
-            reply_markup: this.selectCity(userLanguage),
-          });
-          break;
-        case "contact":
-          bot.sendMessage(userId, messageContactQuestion, {
-            reply_markup: this.selectCityForContact(userLanguage),
-          });
-          break;
-        case "actual":
-          bot.sendMessage(userId, this.actualMultitul(userLanguage), {
-            parse_mode: "HTML",
-          });
-
-          break;
-        case "about":
-          let msg = this.sendAboutInfo(userLanguage);
-          bot.sendMessage(userId, msg);
-
-          break;
-        case "address":
-          bot.sendMessage(userId, messageCity, {
-            reply_markup: this.sendAddressMenu(userLanguage),
-          });
-          break;
-        default:
-          if (citiesKeys.includes(action)) {
-            this.currentCource(action, userId);
-          }
-          if (citiesKeys.includes(action) + "Tel") {
-            this.sendContactsForUser(action, userId);
-          }
-          if (citiesKeys.includes(action) + "ADD") {
-            this.sendAddressMSG(action, userId);
-          }
-          break;
-      }
-    });
     bot.onText(/.*/, (msg) => {
       const chatId = -1002111886632; // ID чата, из которого нужно удалять сообщения
       const messagesToDelete = [
@@ -168,11 +109,10 @@ class NewBot {
     const citiesKeys = ALL_citiesJSON.flatMap((cityObj) =>
       Object.values(cityObj)
     );
-    // const usersBaseData = fs.readFileSync("usersBase.json");
-    //   const usersBase = JSON.parse(usersBaseData);
-    //   const user = usersBase.find((user) => user.userId === userId);
-    //   const userLanguage = user.language;
-    // console.log(text + ' вот шляпа');
+    const usersBaseData = fs.readFileSync("usersBase.json");
+      const usersBase = JSON.parse(usersBaseData);
+      const user = usersBase.find((user) => user.userId === userId);
+      // const userLanguage = user.language;
     switch (text) {
       case "🇷🇺 Русский":
         this.saveUser(userInput, "ru");
@@ -190,14 +130,7 @@ class NewBot {
         break;
 
       default:
-        if (citiesKeys.includes(text) && FLAGKURS === true) {
-          this.currentCource(text, userId);
-          console.log("сработал курс валют");
-        }
-        if (citiesKeys.includes(text) && FLAGCONTACTS === true) {
-          this.sendContactsForUser(text, userId);
-          console.log("сработал отправка контакта");
-        }
+
         break;
     }
   }
@@ -206,11 +139,16 @@ class NewBot {
     const text = userInput.text;
     const usersBase = JSON.parse(usersBaseData);
     const userId = userInput.from.id;
+    const ALL_citiesJSON = questions.citiesLanguage;
+    const citiesKeys = ALL_citiesJSON.flatMap((cityObj) =>
+      Object.values(cityObj)
+    );
     const user = usersBase.find((user) => user.userId === userId);
     const language = user.language;
     switch (text) {
       case text.match(/💱/i) ? text : null:
         FLAGKURS = true;
+        FLAGADDRESS =false;
         FLAGCONTACTS = false;
         this.selectCity(language, userInput);
         console.log("да это ебать курс валют");
@@ -218,12 +156,45 @@ class NewBot {
         case '/contact':
       case text.match(/📨/i) ? text : null:
         FLAGKURS = false;
+        FLAGADDRESS =false;
         FLAGCONTACTS = true;
         this.selectCityForContact(language, userInput);
         console.log("да это ебать контакты");
         break;
-
+        case text.match(/📍/i)?text:null:
+          FLAGKURS=false;
+          FLAGCONTACTS=false;
+          FLAGADDRESS =true;
+          this.sendAddressMenu(language,userInput)
+        break;
+        case text.match(/ℹ️/i)?text:null:
+          console.log('о нас отработало');
+          FLAGKURS=false;
+          FLAGCONTACTS=false;
+          FLAGADDRESS = false;
+          this.sendAboutInfo(language,userInput);
+        break;
+        case text.match(/📈/i)?text:null:
+          console.log('actual отработало');
+          FLAGKURS=false;
+          FLAGCONTACTS=false;
+          FLAGADDRESS = false;
+          this.actualMultitul(language,userInput);
+        break;
       default:
+        if (citiesKeys.includes(text) && FLAGKURS === true) {
+          this.currentCource(text, userId);
+          console.log("сработал курс валют");
+        }
+        if (citiesKeys.includes(text) && FLAGCONTACTS === true) {
+          this.sendContactsForUser(text, userId);
+          console.log("сработал отправка контакта");
+        }
+        if (citiesKeys.includes(text) && FLAGADDRESS === true) {
+          this.sendAddressMSG(text,userId);
+          console.log("сработал отправка адреса");
+        }
+        //тут надо добавить на инфо шляпу
         break;
     }
   }
@@ -366,11 +337,11 @@ class NewBot {
     };
   }
 
-  sendAddressMSG(action, userId) {
-    switch (action) {
-      case "KrakowADD":
-      case "КраковADD":
-      case "KrakówADD":
+  sendAddressMSG(text, userId) {
+    switch (text) {
+      case "Krakow":
+      case "Краков":
+      case "Kraków":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
@@ -380,9 +351,9 @@ class NewBot {
         );
         break;
 
-      case "WrocławADD":
-      case "ВроцлавADD":
-      case "WroclawADD":
+      case "Wrocław":
+      case "Вроцлав":
+      case "Wroclaw":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Wrocław</b>\n \n<b>email</b> 📬: kantor1913.wroclaw1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
@@ -391,9 +362,9 @@ class NewBot {
           }
         );
         break;
-      case "PrzemyslADD":
-      case "PrzemyślADD":
-      case "ПшемысльADD":
+      case "Przemysl":
+      case "Przemyśl":
+      case "Пшемысль":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Przemyśl</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
@@ -402,9 +373,9 @@ class NewBot {
           }
         );
         break;
-      case "GdanskADD":
-      case "GdańskADD":
-      case "ГданьскADD":
+      case "Gdansk":
+      case "Gdańsk":
+      case "Гданьск":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Gdańsk</b>\n \n<b>email</b> 📬: kantor1913.gdansk1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
@@ -413,9 +384,9 @@ class NewBot {
           }
         );
         break;
-      case "LodzADD":
-      case "ŁódźADD":
-      case "ЛодзьADD":
+      case "Lodz":
+      case "Łódź":
+      case "Лодзь":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Łódź</b>\n \n<b>email</b> 📬: kantor1913.lodz1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
@@ -424,8 +395,8 @@ class NewBot {
           }
         );
         break;
-      case "WarszawaADD":
-      case "ВаршаваADD":
+      case "Warszawa":
+      case "Варшава":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Warszawa</b>\n \n<b>email</b> 📬: kantor1913.warszawa1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
@@ -434,9 +405,9 @@ class NewBot {
           }
         );
         break;
-      case "KrakowPKPADD":
-      case "Kraków PKPADD":
-      case "Краков ПКПADD":
+      case "KrakowPKP":
+      case "Kraków PKP":
+      case "Краков ПКП":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków (PKP)</b>\n \n<b>email</b> 📬: kantor1913.krakow2@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
@@ -445,9 +416,9 @@ class NewBot {
           }
         );
         break;
-      case "RzeszowADD":
-      case "RzeszówADD":
-      case "ЖешувADD":
+      case "Rzeszow":
+      case "Rzeszów":
+      case "Жешув":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Rzeszów</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
@@ -456,9 +427,9 @@ class NewBot {
           }
         );
         break;
-      case "PoznanADD":
-      case "PoznańADD":
-      case "ПознаньADD":
+      case "Poznan":
+      case "Poznań":
+      case "Познань":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
@@ -467,8 +438,8 @@ class NewBot {
           }
         );
         break;
-      case "LublinADD":
-      case "ЛюблинADD":
+      case "Lublin":
+      case "Люблин":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
@@ -477,8 +448,8 @@ class NewBot {
           }
         );
         break;
-      case "SzczecinADD":
-      case "ЩецинADD":
+      case "Szczecin":
+      case "Щецин":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
@@ -516,7 +487,6 @@ class NewBot {
       pl: "Aktualny kurs na chwilę obecną:",
     };
     this.sendContactsForUser(text, userId);
-    //!TODO тут первая кнопка связь с менеджером долэны быть вызовом функции
     bot.sendMessage(userId, actualCurseMsg[language], {
       reply_markup: JSON.stringify({ inline_keyboard: buttons }),
     });
@@ -534,65 +504,65 @@ class NewBot {
       case "Краков":
       case "Kraków":
         phoneNumber = "+48500560146"; // Номер телефона для отправки сообщения
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
 
       case "Wrocław":
       case "Вроцлав":
       case "Wroclaw":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Lodz":
       case "Łódź":
       case "Лодзь":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Warszawa":
       case "Варшава":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Rzeszow":
       case "Rzeszów":
       case "Жешув":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Poznan":
       case "Poznań":
       case "Познань":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Lublin":
       case "Люблин":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
       case "Szczecin":
       case "Щецин":
         phoneNumber = "+48500560146";
-        contactName = "Don Perdole";
+        contactName = "kontact ";
         break;
 
       default:
@@ -661,22 +631,28 @@ class NewBot {
       },
     });
   }
-  sendAddressMenu(userLanguage) {
+  sendAddressMenu(userLanguage, userInput) {
+    const chatId = userInput.chat.id;
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
-
+    const messageCity = questions[userLanguage].city;
     const citiesData = questions.citiesLanguage;
     const cities = citiesData.flatMap((cityObj) => cityObj[userLanguage]);
     const buttons = cities.map((city) => ({
       text: city,
-      callback_data: city + "ADD", // или можно указать другие данные обратного вызова, если это необходимо
     }));
-
+    // Разбиваем кнопки на массивы, каждый из которых содержит не более трех кнопок
     const inlineKeyboard = [];
     for (let i = 0; i < buttons.length; i += 3) {
       inlineKeyboard.push(buttons.slice(i, i + 3));
     }
-    return { inline_keyboard: inlineKeyboard };
+    bot.sendMessage(chatId, messageCity, {
+      reply_markup: {
+        keyboard: inlineKeyboard,
+        resize_keyboard: true, // Можете убрать, если не требуется
+        one_time_keyboard: true,
+      },
+    });
   }
   getCountryEmoji(countryCode) {
     // Примеры эмодзи флагов
@@ -702,12 +678,17 @@ class NewBot {
 
     return flagEmojis[countryCode] || "";
   }
-  sendAboutInfo(language) {
+  sendAboutInfo(language,userInput) {
+    const chatId = userInput.chat.id;
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
     const AboutMSG = questions.aboutUs[language];
-    return AboutMSG;
+    bot.sendMessage(chatId, AboutMSG)
   }
-  actualMultitul(language) {
-    return this.firstNewsPaper(language);
+  actualMultitul(language,userInput) {
+    const chatId = userInput.chat.id;
+    const actualMSG = this.firstNewsPaper(language);
+    bot.sendMessage(chatId,actualMSG,{ parse_mode: 'HTML' })
   }
   firstNewsPaper(language) {
     const paymentInfo = {
