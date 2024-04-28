@@ -1,5 +1,5 @@
 // npm run dev
-const token = "7122702562:AAFcNto8K7YTBf3NOQhB51q5LRYImjZXLlM";
+const token = "6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ";
 const fs = require("fs");
 const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
@@ -114,7 +114,7 @@ class NewBot {
       const user = usersBase.find((user) => user.userId === userId);
       // const userLanguage = user.language;
     switch (text) {
-      case "🇷🇺 Русский":
+      case "🏳️ Русский":
         this.saveUser(userInput, "ru");
         this.gotoPrivateChat(userInput);
         break;
@@ -123,9 +123,14 @@ class NewBot {
         this.saveUser(userInput, "en");
         this.gotoPrivateChat(userInput);
         break;
-      case "🇵🇱 Polska":
+      case "🇵🇱 Polski":
         console.log("Выбран язык 🇵🇱 " + text);
         this.saveUser(userInput, "pl");
+        this.gotoPrivateChat(userInput);
+        break;
+        case "🇺🇦 Українська":
+        console.log("Выбран язык 🇵🇱 " + text);
+        this.saveUser(userInput, "ukr");
         this.gotoPrivateChat(userInput);
         break;
 
@@ -200,8 +205,9 @@ class NewBot {
   }
   setLanguageMenu(userInput) {
     const keyboard = [
-      [{ text: "🇺🇸 English" }, { text: "🇵🇱 Polska" }, { text: "🇷🇺 Русский" }],
-    ];
+      [{ text: "🇺🇦 Українська" }],
+      [{ text: "🇺🇸 English" }, { text: "🇵🇱 Polski" }, { text: "🏳️ Русский" }]
+  ];
     const chatId = userInput.chat.id;
 
     // Отправка сообщения с клавиатурой
@@ -342,6 +348,7 @@ class NewBot {
       case "Krakow":
       case "Краков":
       case "Kraków":
+        case "Краків":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
@@ -365,6 +372,7 @@ class NewBot {
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
+        case "Пшемишль":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Przemyśl</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
@@ -376,6 +384,7 @@ class NewBot {
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
+        case "Гданськ":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Gdańsk</b>\n \n<b>email</b> 📬: kantor1913.gdansk1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
@@ -408,6 +417,7 @@ class NewBot {
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
+        case "Краків ПКП":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków (PKP)</b>\n \n<b>email</b> 📬: kantor1913.krakow2@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
@@ -440,6 +450,7 @@ class NewBot {
         break;
       case "Lublin":
       case "Люблин":
+        case "Люблін":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
@@ -485,12 +496,13 @@ class NewBot {
       ru: "Актуальный курс на данный момент:",
       en: "Current exchange rate at the moment:",
       pl: "Aktualny kurs na chwilę obecną:",
+      ukr: "Поточний курс на даний момент:",
     };
-    this.sendContactsForUser(text, userId);
     bot.sendMessage(userId, actualCurseMsg[language], {
       reply_markup: JSON.stringify({ inline_keyboard: buttons }),
     });
 
+    this.sendContactsForUser(text, userId);
     return JSON.stringify({ inline_keyboard: buttons });
   }
   sendContactsForUser(text, userId) {
@@ -503,6 +515,7 @@ class NewBot {
       case "Krakow":
       case "Краков":
       case "Kraków":
+      case "Краків":
         phoneNumber = "+48500560146"; // Номер телефона для отправки сообщения
         contactName = "kontact ";
         break;
@@ -516,12 +529,14 @@ class NewBot {
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
+        case"Пшемишль":
         phoneNumber = "+48500560146";
         contactName = "kontact ";
         break;
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
+        case"Гданськ":
         phoneNumber = "+48500560146";
         contactName = "kontact ";
         break;
@@ -539,6 +554,7 @@ class NewBot {
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
+        case"Краків ПКП":
         phoneNumber = "+48500560146";
         contactName = "kontact ";
         break;
@@ -556,6 +572,7 @@ class NewBot {
         break;
       case "Lublin":
       case "Люблин":
+        case"Люблін":
         phoneNumber = "+48500560146";
         contactName = "kontact ";
         break;
@@ -578,6 +595,7 @@ class NewBot {
       en: "Contact the manager",
       ru: "Связь с менеджером",
       pl: "Kontakt z menedżerem",
+      ukr: "Зв'яжіться з менеджером"
     };
     bot.sendMessage(userId, managerText[language], {
       reply_markup: JSON.stringify(keyboard),
@@ -695,6 +713,7 @@ class NewBot {
       ru: "<b>Оплата картой</b> 💳\nУважаемые клиенты, с радостью сообщаем вам, что теперь вы можете обменивать свои деньги с помощью банковской карты.\nЭта транзакция будет включать минимальную плату:\nПольская карта - 1,0% от курса продажи\nИностранная карта - 3,0% от курса продажи\n(Лимит единиц транзакций 1000)",
       en: "<b>Card Payment</b> 💳\nDear Customers, we are pleased to inform you that you can now exchange your money using a debit/credit card.\nThis transaction will incur a minimum fee:\nPolish card - 1.0% to the selling rate\nForeign card - 3.0% to the selling rate\n(Transaction units limit 1000)",
       pl: "<b>Płatność kartą</b> 💳\nSzanowni Klienci, z przyjemnością informujemy, że od teraz możesz wymieniać swoje pieniądze za pomocą karty płatniczej.\nTa transakcja będzie podlegać minimalnej opłacie:\nKarta polska - 1,0% do kursu sprzedaży\nKarta zagraniczna - 3,0% do kursu sprzedaży\n(Limit jednostek transakcji 1000)",
+      ukr: "<b>Оплата карткою</b> 💳\nШановні клієнти, ми раді повідомити вам, що тепер ви можете обмінювати свої гроші за допомогою банківської картки.\nЦя транзакція вимагатиме мінімальну комісію:\nПольська картка - 1,0% від курсу продажу\nІноземна картка - 3,0% від курсу продажу\n(Обмеження одиниць транзакцій 1000)"
     };
     return paymentInfo[language];
   }

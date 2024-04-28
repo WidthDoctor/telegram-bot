@@ -23,25 +23,34 @@
       "question": "Jakie informacje potrzebujesz?",
       "options": ["Kurs walut", "Kontakt", "Aktualizacje", "O nas","Adresy naszych oddziałów"]
     },
+    "ukr":{
+      "contactQuestion": "З яким керівником міста потрібно зв'язатися?",
+      "city": "Виберіть місто:",
+      "startIn": "Що вас цікавить?",
+      "start": "Продовжимо тут. Що вас цікавить?",
+      "question": "Яку інформацію вам потрібно?",
+      "options": ["Курс валют", "Контакт", "Оновлення", "Про нас", "Адреси наших відділень"]
+    },
     "cities":["Krakow","Wroclaw","Przemysl","Gdansk","Lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
 
-      "citiesLanguage": [
-        {"en": "Krakow", "pl": "Kraków", "ru": "Краков"},
-        {"en": "Wroclaw", "pl": "Wrocław", "ru": "Вроцлав"},
-        {"en": "Przemysl", "pl": "Przemyśl", "ru": "Пшемысль"},
-        {"en": "Gdansk", "pl": "Gdańsk", "ru": "Гданьск"},
-        {"en": "Lodz", "pl": "Łódź", "ru": "Лодзь"},
-        {"en": "Warszawa", "pl": "Warszawa", "ru": "Варшава"},
-        {"en": "Krakow PKP", "pl": "Kraków PKP", "ru": "Краков ПКП"},
-        {"en": "Rzeszow", "pl": "Rzeszów", "ru": "Жешув"},
-        {"en": "Poznan", "pl": "Poznań", "ru": "Познань"},
-        {"en": "Lublin", "pl": "Lublin", "ru": "Люблин"},
-        {"en": "Szczecin", "pl": "Szczecin", "ru": "Щецин"}
-      ],
+    "citiesLanguage": [
+      {"en": "Krakow", "pl": "Kraków", "ru": "Краков", "ukr": "Краків"},
+      {"en": "Wroclaw", "pl": "Wrocław", "ru": "Вроцлав", "ukr": "Вроцлав"},
+      {"en": "Przemysl", "pl": "Przemyśl", "ru": "Пшемысль", "ukr": "Пшемишль"},
+      {"en": "Gdansk", "pl": "Gdańsk", "ru": "Гданьск", "ukr": "Гданськ"},
+      {"en": "Lodz", "pl": "Łódź", "ru": "Лодзь", "ukr": "Лодзь"},
+      {"en": "Warszawa", "pl": "Warszawa", "ru": "Варшава", "ukr": "Варшава"},
+      {"en": "Krakow PKP", "pl": "Kraków PKP", "ru": "Краков ПКП", "ukr": "Краків ПКП"},
+      {"en": "Rzeszow", "pl": "Rzeszów", "ru": "Жешув", "ukr": "Жешув"},
+      {"en": "Poznan", "pl": "Poznań", "ru": "Познань", "ukr": "Познань"},
+      {"en": "Lublin", "pl": "Lublin", "ru": "Люблин", "ukr": "Люблін"},
+      {"en": "Szczecin", "pl": "Szczecin", "ru": "Щецин", "ukr": "Щецин"}
+    ],
     "cityURL": {
     "Krakow": "https://kantor1913.pl/wszystkie-waluty",
     "Kraków": "https://kantor1913.pl/wszystkie-waluty",
     "Краков": "https://kantor1913.pl/wszystkie-waluty",
+    "Краків":"https://kantor1913.pl/wszystkie-waluty",
 
     "Wroclaw": "https://kantor1913.pl/kursy-wroclaw-en",
     "Wrocław": "https://kantor1913.pl/kursy-wroclaw-en",
@@ -50,6 +59,7 @@
     "Przemysl": "https://kantor1913.pl/kursy-przemysl-en",
     "Przemyśl": "https://kantor1913.pl/kursy-przemysl-en",
     "Пшемысль": "https://kantor1913.pl/kursy-przemysl-en",
+    "Пшемишль": "https://kantor1913.pl/kursy-przemysl-en",
 
     "Gdansk": "https://kantor1913.pl/kursy-gdansk-en",
     "Gdańsk": "https://kantor1913.pl/kursy-gdansk-en",
@@ -65,6 +75,7 @@
     "KrakowPKP": "https://kantor1913.pl/kursy-krakow-pkp-en",
     "Kraków PKP": "https://kantor1913.pl/kursy-krakow-pkp-en",
     "Краков ПКП": "https://kantor1913.pl/kursy-krakow-pkp-en",
+    "Краків ПКП": "https://kantor1913.pl/kursy-krakow-pkp-en",
 
     "Rzeszow": "https://kantor1913.pl/kursy-rzeszow-en",
     "Rzeszów": "https://kantor1913.pl/kursy-rzeszow-en",
@@ -76,14 +87,15 @@
 
     "Lublin": "https://kantor1913.pl/kursy-lublin-en",
     "Люблин": "https://kantor1913.pl/kursy-lublin-en",
+    "Люблін": "https://kantor1913.pl/kursy-lublin-en",
 
-    "Szczecin": "https://kantor1913.pl/kursy-szczecin-en",
     "Szczecin": "https://kantor1913.pl/kursy-szczecin-en",
     "Щецин": "https://kantor1913.pl/kursy-szczecin-en"
   },
   "aboutUs": {
     "ru": "🇺🇦Kantor 1913 - крупнейшая сеть обменных пунктов в Польше💲\nМы имеем 11 рабочих отделений по всей Польше:\n▫️2 отделения в Кракове\n▫️Варшава\n▫️Перемышль\n▫️Лодзь\n▫️Гданьск\n▫️Вроцлав\n▫️Познань\n▫️Жешув\n▫️Люблин\n▫️Щецин\n📍Адреса наших отделений можно найти на нашем сайте: kantor1913.pl\nМы являемся сертифицированным пунктом продажи и покупки валют на территории Польши.\nОтправляем деньги в любую точку мира, имеем лучший курс обмена среди конкурентов и, кроме традиционной валюты, обмениваем криптовалюту.\nБудем рады видеть вас!",
     "en": "🇺🇦Kantor 1913 - the largest network of exchange offices in Poland💲\nWe have 11 operational branches across Poland:\n▫️2 branches in Krakow\n▫️Warsaw\n▫️Przemyśl\n▫️Łódź\n▫️Gdańsk\n▫️Wrocław\n▫️Poznań\n▫️Rzeszów\n▫️Lublin\n▫️Szczecin\n📍The addresses of our branches can be found on our website: kantor1913.pl\nWe are a certified currency exchange and purchase point in Poland.\nWe send money to any part of the world, offering the best exchange rate among competitors, and besides traditional currency, we exchange cryptocurrency.\nWe will be glad to see you!",
-    "pl": "🇺🇦Kantor 1913 - największa sieć kantorów w Polsce💲\nMamy 11 działających oddziałów na terenie całej Polski:\n▫️2 oddziały w Krakowie\n▫️Warszawa\n▫️Przemyśl\n▫️Łódź\n▫️Gdańsk\n▫️Wrocław\n▫️Poznań\n▫️Rzeszów\n▫️Lublin\n▫️Szczecin\n📍Adresy naszych oddziałów znajdziesz na naszej stronie internetowej: kantor1913.pl\nJesteśmy certyfikowanym punktem sprzedaży i kupna walut w Polsce.\nWysyłamy pieniądze w dowolne miejsce na świecie, oferujemy najlepszy kurs wymiany wśród konkurentów oraz wymieniamy kryptowaluty.\nBędziemy zadowoleni z Państwa wizyty!"
-    }
+    "pl": "🇺🇦Kantor 1913 - największa sieć kantorów w Polsce💲\nMamy 11 działających oddziałów na terenie całej Polski:\n▫️2 oddziały w Krakowie\n▫️Warszawa\n▫️Przemyśl\n▫️Łódź\n▫️Gdańsk\n▫️Wrocław\n▫️Poznań\n▫️Rzeszów\n▫️Lublin\n▫️Szczecin\n📍Adresy naszych oddziałów znajdziesz na naszej stronie internetowej: kantor1913.pl\nJesteśmy certyfikowanym punktem sprzedaży i kupna walut w Polsce.\nWysyłamy pieniądze w dowolne miejsce na świecie, oferujemy najlepszy kurs wymiany wśród konkurentów oraz wymieniamy kryptowaluty.\nBędziemy zadowoleni z Państwa wizyty!",
+    "ukr": "🇺🇦Kantor 1913 - найбільша мережа обмінних пунктів у Польщі💲\nМи маємо 11 робочих відділень по всій Польщі:\n▫️2 відділення у Кракові\n▫️Варшава\n▫️Перемишль\n▫️Лодзь\n▫️Гданськ\n▫️Вроцлав\n▫️Познань\n▫️Жешув\n▫️Люблін\n▫️Щецин\n📍Адреси наших відділень можна знайти на нашому веб-сайті: kantor1913.pl\nМи є сертифікованим пунктом продажу і купівлі валют на території Польщі.\nНадсилаємо гроші в будь-яку точку світу, маємо найкращий курс обміну серед конкурентів, і, крім традиційної валюти, обмінюємо криптовалюту.\nБудемо раді бачити вас!"
+  }
 }
