@@ -18,10 +18,10 @@
     "pl": {
       "contactQuestion": "Z jakim menedżerem miasta należy się skontaktować?",
       "city":"Wybierz miasto:",
-      "startIn": "Co Cię interesuje?",
-      "start": "Kontynuujmy tutaj. Co Cię interesuje?",
+      "startIn": "Jak mogę ci pomóc?",
+      "start": "Kontynuujmy tutaj. Jak mogę ci pomóc?",
       "question": "Jakie informacje potrzebujesz?",
-      "options": ["Kurs walut", "Kontakt", "Aktualizacje", "O nas","Adresy naszych oddziałów"]
+      "options": ["Kurs walut", "Kontakt", "Aktualne", "O nas","Adresy naszych oddziałów"]
     },
     "ukr":{
       "contactQuestion": "З яким керівником міста потрібно зв'язатися?",
@@ -29,7 +29,7 @@
       "startIn": "Що вас цікавить?",
       "start": "Продовжимо тут. Що вас цікавить?",
       "question": "Яку інформацію вам потрібно?",
-      "options": ["Курс валют", "Контакт", "Оновлення", "Про нас", "Адреси наших відділень"]
+      "options": ["Курс валют", "Контакт", "Актуальне", "Про нас", "Адреси наших відділень"]
     },
     "cities":["Krakow","Wroclaw","Przemysl","Gdansk","Lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
 

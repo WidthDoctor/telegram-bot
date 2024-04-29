@@ -196,7 +196,7 @@ class NewBot {
           console.log("сработал отправка контакта");
         }
         if (citiesKeys.includes(text) && FLAGADDRESS === true) {
-          this.sendAddressMSG(text,userId);
+          this.sendAddressMSG(text,userId,language);
           console.log("сработал отправка адреса");
         }
         //тут надо добавить на инфо шляпу
@@ -343,7 +343,7 @@ class NewBot {
     };
   }
 
-  sendAddressMSG(text, userId) {
+  sendAddressMSG(text, userId,language) {
     switch (text) {
       case "Krakow":
       case "Краков":
@@ -353,7 +353,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -365,7 +366,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Wrocław</b>\n \n<b>email</b> 📬: kantor1913.wroclaw1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -377,7 +379,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Przemyśl</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -389,7 +392,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Gdańsk</b>\n \n<b>email</b> 📬: kantor1913.gdansk1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -400,7 +404,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Łódź</b>\n \n<b>email</b> 📬: kantor1913.lodz1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -410,7 +415,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Warszawa</b>\n \n<b>email</b> 📬: kantor1913.warszawa1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -422,7 +428,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Kraków (PKP)</b>\n \n<b>email</b> 📬: kantor1913.krakow2@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -433,7 +440,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Rzeszów</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -444,7 +452,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -455,7 +464,8 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
@@ -465,12 +475,14 @@ class NewBot {
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
-            parse_mode: "HTML",
+            reply_markup: this.kantorMenu(language),
+            parse_mode: "HTML"
           }
         );
         break;
 
       default:
+
         break;
     }
   }
@@ -510,76 +522,71 @@ class NewBot {
     const usersBase = JSON.parse(usersBaseData);
     const user = usersBase.find((user) => user.userId === userId);
     const language = user.language;
-    let phoneNumber, contactName;
+    let phoneNumber;
+    const contactName = {
+      en: "Contact us",
+      ru: "Связаться с нами",
+      pl: "Skontaktuj się z nami",
+      ukr: "Зв'яжіться з нами"
+  };
     switch (text) {
       case "Krakow":
       case "Краков":
       case "Kraków":
       case "Краків":
         phoneNumber = "+48500560146"; // Номер телефона для отправки сообщения
-        contactName = "kontact ";
         break;
 
       case "Wrocław":
       case "Вроцлав":
       case "Wroclaw":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
         case"Пшемишль":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
         case"Гданськ":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Lodz":
       case "Łódź":
       case "Лодзь":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Warszawa":
       case "Варшава":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
         case"Краків ПКП":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Rzeszow":
       case "Rzeszów":
       case "Жешув":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Poznan":
       case "Poznań":
       case "Познань":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Lublin":
       case "Люблин":
         case"Люблін":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
       case "Szczecin":
       case "Щецин":
         phoneNumber = "+48500560146";
-        contactName = "kontact ";
         break;
 
       default:
@@ -588,7 +595,7 @@ class NewBot {
     const chatUrl = `https://t.me/${phoneNumber}`;
 
     const keyboard = {
-      inline_keyboard: [[{ text: contactName, url: chatUrl }]],
+      inline_keyboard: [[{ text: contactName[language], url: chatUrl }]],
       resize_keyboard: true, // Разрешить кнопкам изменять размер для соответствия экрану
     };
     const managerText = {
@@ -597,10 +604,12 @@ class NewBot {
       pl: "Kontakt z menedżerem",
       ukr: "Зв'яжіться з менеджером"
     };
-    bot.sendMessage(userId, managerText[language], {
-      reply_markup: JSON.stringify(keyboard),
-      resize_keyboard: true,
-    });
+    setTimeout(() => {
+      bot.sendMessage(userId, managerText[language], {
+          reply_markup: JSON.stringify(keyboard),
+          resize_keyboard: true,
+      });
+  }, 1000);
   }
   selectCity(userLanguage, userInput) {
     console.log(userLanguage);
@@ -701,12 +710,16 @@ class NewBot {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
     const AboutMSG = questions.aboutUs[language];
-    bot.sendMessage(chatId, AboutMSG)
+    bot.sendMessage(chatId, AboutMSG,{
+      reply_markup: this.kantorMenu(language),
+    });
   }
   actualMultitul(language,userInput) {
     const chatId = userInput.chat.id;
     const actualMSG = this.firstNewsPaper(language);
-    bot.sendMessage(chatId,actualMSG,{ parse_mode: 'HTML' })
+    bot.sendMessage(chatId,actualMSG,{
+      reply_markup: this.kantorMenu(language),
+      parse_mode: 'HTML' })
   }
   firstNewsPaper(language) {
     const paymentInfo = {
