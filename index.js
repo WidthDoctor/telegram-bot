@@ -66,13 +66,12 @@ class NewBot {
         break;
         case "/start":
           if (!user) {
-            console.log("Пользователь не найден в базе данных");
             this.setLanguageMenu(userInput);
             //чекаем есть ли юзер в базе данных
           }
           else
           if(user){
-            console.log('а тут нахуя работает?');
+            console.log(user.username);
             FLAGKURS = false;
             FLAGCONTACTS = false;
             this.gotoPrivateChat(userInput);
@@ -103,7 +102,6 @@ class NewBot {
     });
   }
   KONTROL_PANEL_LANGUAGE(userInput, text) {
-    console.log(text);
     const userId = userInput.from.id;
     const ALL_citiesJSON = questions.citiesLanguage;
     const citiesKeys = ALL_citiesJSON.flatMap((cityObj) =>
@@ -119,17 +117,14 @@ class NewBot {
         this.gotoPrivateChat(userInput);
         break;
       case "🇺🇸 English":
-        console.log("Выбран язык 🇺🇸 " + text);
         this.saveUser(userInput, "en");
         this.gotoPrivateChat(userInput);
         break;
       case "🇵🇱 Polski":
-        console.log("Выбран язык 🇵🇱 " + text);
         this.saveUser(userInput, "pl");
         this.gotoPrivateChat(userInput);
         break;
         case "🇺🇦 Українська":
-        console.log("Выбран язык 🇵🇱 " + text);
         this.saveUser(userInput, "ukr");
         this.gotoPrivateChat(userInput);
         break;
@@ -156,7 +151,6 @@ class NewBot {
         FLAGADDRESS =false;
         FLAGCONTACTS = false;
         this.selectCity(language, userInput);
-        console.log("да это ебать курс валют");
         break;
         case '/contact':
       case text.match(/📨/i) ? text : null:
@@ -164,7 +158,6 @@ class NewBot {
         FLAGADDRESS =false;
         FLAGCONTACTS = true;
         this.selectCityForContact(language, userInput);
-        console.log("да это ебать контакты");
         break;
         case text.match(/📍/i)?text:null:
           FLAGKURS=false;
@@ -173,14 +166,12 @@ class NewBot {
           this.sendAddressMenu(language,userInput)
         break;
         case text.match(/ℹ️/i)?text:null:
-          console.log('о нас отработало');
           FLAGKURS=false;
           FLAGCONTACTS=false;
           FLAGADDRESS = false;
           this.sendAboutInfo(language,userInput);
         break;
         case text.match(/📈/i)?text:null:
-          console.log('actual отработало');
           FLAGKURS=false;
           FLAGCONTACTS=false;
           FLAGADDRESS = false;
@@ -189,16 +180,13 @@ class NewBot {
       default:
         if (citiesKeys.includes(text) && FLAGKURS === true) {
           this.currentCource(text, userId);
-          console.log("сработал курс валют");
-        }
+                }
         if (citiesKeys.includes(text) && FLAGCONTACTS === true) {
           this.sendContactsForUser(text, userId);
-          console.log("сработал отправка контакта");
-        }
+                }
         if (citiesKeys.includes(text) && FLAGADDRESS === true) {
           this.sendAddressMSG(text,userId,language);
-          console.log("сработал отправка адреса");
-        }
+                }
         //тут надо добавить на инфо шляпу
         break;
     }
@@ -612,7 +600,6 @@ class NewBot {
   }, 1000);
   }
   selectCity(userLanguage, userInput) {
-    console.log(userLanguage);
     const chatId = userInput.chat.id;
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
