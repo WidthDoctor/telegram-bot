@@ -426,7 +426,7 @@ class NewBot {
       case "Жешув":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Rzeszów</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          "<b>Kantor 1913 Rzeszów</b>\n \n<b>email</b> 📬: kantor1913.rzeszow1@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/wXHnDweKBnkqpa5fA'>ul. Świętego Mikołaja 7, 35-005 Rzeszów</a>\n🕘 8:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML"
@@ -438,7 +438,7 @@ class NewBot {
       case "Познань":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          "<b>Kantor 1913 Poznań</b>\n \n<b>email</b> 📬: kantor1913.poznan@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/gMUcWtqfekznnd8c7'>ul. Głogowska 51/2, 60-738 Poznań</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML"
@@ -450,7 +450,7 @@ class NewBot {
         case "Люблін":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          "<b>Kantor 1913 Lublin</b>\n \n<b>email</b> 📬: kantor1913.lublin@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/Sb7yJuHtXfn1tVB96'>ul. 1 Maja 30, 20-410 Lublin</a>\n🕘 8:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML"
@@ -461,7 +461,7 @@ class NewBot {
       case "Щецин":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          "<b>Kantor 1913 Szczecin</b>\n \n<b>email</b> 📬: kantor1913.szczecin@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/3Rq4hHXkRjq9Ms757'>ul. Edmunda Bałuki 20, 70-407 Szczecin</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML"
