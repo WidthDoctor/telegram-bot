@@ -5,7 +5,7 @@
       "startIn": "What are you interested in?",
       "start": "Let's continue here. What are you interested in?",
       "question": "What information do you need?",
-      "options": ["Currency exchange rate", "Contacts", "Updates", "About us","Our branch addresses"]
+      "options": ["Currency exchange rate", "Contacts", "Updates", "About us","Our branch addresses","Calculator"]
     },
     "ru": {
       "contactQuestion":"С менеджером какого города нужно связаться?",
@@ -13,7 +13,7 @@
       "startIn": "Что тебя интересует?",
       "start": "Давай продолжим здесь. Что тебя интересует?",
       "question": "Какая информация вам нужна?",
-      "options": ["Курс валют", "Контакты", "Актуальное", "О нас","Адреса наших отделений"]
+      "options": ["Курс валют", "Контакты", "Актуальное", "О нас","Адреса наших отделений","Калькулятор"]
     },
     "pl": {
       "contactQuestion": "Z jakim menedżerem miasta należy się skontaktować?",
@@ -21,7 +21,7 @@
       "startIn": "Jak mogę ci pomóc?",
       "start": "Kontynuujmy tutaj. Jak mogę ci pomóc?",
       "question": "Jakie informacje potrzebujesz?",
-      "options": ["Kurs walut", "Kontakt", "Aktualne", "O nas","Adresy naszych oddziałów"]
+      "options": ["Kurs walut", "Kontakt", "Aktualne", "O nas","Adresy naszych oddziałów","Kalkulator"]
     },
     "ukr":{
       "contactQuestion": "З яким керівником міста потрібно зв'язатися?",
@@ -29,7 +29,7 @@
       "startIn": "Що вас цікавить?",
       "start": "Продовжимо тут. Що вас цікавить?",
       "question": "Яку інформацію вам потрібно?",
-      "options": ["Курс валют", "Контакт", "Актуальне", "Про нас", "Адреси наших відділень"]
+      "options": ["Курс валют", "Контакт", "Актуальне", "Про нас", "Адреси наших відділень","Калькулятор"]
     },
     "cities":["Krakow","Wroclaw","Przemysl","Gdansk","Lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
 

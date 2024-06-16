@@ -5,6 +5,7 @@ const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
 const cheerio = require("cheerio");
 const questions = require("./questions.json");
+const { url } = require("inspector");
 
 let FLAGKURS = false;
 let FLAGCONTACTS = false;
@@ -16,7 +17,7 @@ class NewBot {
     bot.setMyCommands([
       { command: "/start", description: "Menu" },
       { command: "/contact", description: "Contacts" },
-      { command: "/language", description: "Change language"},
+      { command: "/language", description: "Change language" },
     ]);
   }
 
@@ -61,16 +62,14 @@ class NewBot {
       const user = usersBase.find((user) => user.userId === userId);
 
       switch (text) {
-        case '/language':
+        case "/language":
           this.setLanguageMenu(userInput);
-        break;
+          break;
         case "/start":
           if (!user) {
             this.setLanguageMenu(userInput);
             //чекаем есть ли юзер в базе данных
-          }
-          else
-          if(user){
+          } else if (user) {
             console.log(user.username);
             FLAGKURS = false;
             FLAGCONTACTS = false;
@@ -108,9 +107,9 @@ class NewBot {
       Object.values(cityObj)
     );
     const usersBaseData = fs.readFileSync("usersBase.json");
-      const usersBase = JSON.parse(usersBaseData);
-      const user = usersBase.find((user) => user.userId === userId);
-      // const userLanguage = user.language;
+    const usersBase = JSON.parse(usersBaseData);
+    const user = usersBase.find((user) => user.userId === userId);
+    // const userLanguage = user.language;
     switch (text) {
       case "🏳️ Русский":
         this.saveUser(userInput, "ru");
@@ -124,17 +123,16 @@ class NewBot {
         this.saveUser(userInput, "pl");
         this.gotoPrivateChat(userInput);
         break;
-        case "🇺🇦 Українська":
+      case "🇺🇦 Українська":
         this.saveUser(userInput, "ukr");
         this.gotoPrivateChat(userInput);
         break;
 
       default:
-
         break;
     }
   }
-  KONTROL_PANEL_SECONDMENU(userInput){
+  KONTROL_PANEL_SECONDMENU(userInput) {
     const usersBaseData = fs.readFileSync("usersBase.json");
     const text = userInput.text;
     const usersBase = JSON.parse(usersBaseData);
@@ -145,48 +143,50 @@ class NewBot {
     );
     const user = usersBase.find((user) => user.userId === userId);
     const language = user.language;
-    switch (text) {//!Баг при выборе разными пользователями разных меню. Бот не может в многопоточность и поэтому надо сделать запись в профиль его выбора, чтобы потом продолжать откуда надо и небыло перекрещивания
+    switch (
+      text //!Баг при выборе разными пользователями разных меню. Бот не может в многопоточность и поэтому надо сделать запись в профиль его выбора, чтобы потом продолжать откуда надо и небыло перекрещивания
+    ) {
       case text.match(/💱/i) ? text : null:
         FLAGKURS = true;
-        FLAGADDRESS =false;
+        FLAGADDRESS = false;
         FLAGCONTACTS = false;
         this.selectCity(language, userInput);
         break;
-        case '/contact':
+      case "/contact":
       case text.match(/📨/i) ? text : null:
         FLAGKURS = false;
-        FLAGADDRESS =false;
+        FLAGADDRESS = false;
         FLAGCONTACTS = true;
         this.selectCityForContact(language, userInput);
         break;
-        case text.match(/📍/i)?text:null:
-          FLAGKURS=false;
-          FLAGCONTACTS=false;
-          FLAGADDRESS =true;
-          this.sendAddressMenu(language,userInput)
+      case text.match(/📍/i) ? text : null:
+        FLAGKURS = false;
+        FLAGCONTACTS = false;
+        FLAGADDRESS = true;
+        this.sendAddressMenu(language, userInput);
         break;
-        case text.match(/ℹ️/i)?text:null:
-          FLAGKURS=false;
-          FLAGCONTACTS=false;
-          FLAGADDRESS = false;
-          this.sendAboutInfo(language,userInput);
+      case text.match(/ℹ️/i) ? text : null:
+        FLAGKURS = false;
+        FLAGCONTACTS = false;
+        FLAGADDRESS = false;
+        this.sendAboutInfo(language, userInput);
         break;
-        case text.match(/📈/i)?text:null:
-          FLAGKURS=false;
-          FLAGCONTACTS=false;
-          FLAGADDRESS = false;
-          this.actualMultitul(language,userInput);
+      case text.match(/📈/i) ? text : null:
+        FLAGKURS = false;
+        FLAGCONTACTS = false;
+        FLAGADDRESS = false;
+        this.actualMultitul(language, userInput);
         break;
       default:
         if (citiesKeys.includes(text) && FLAGKURS === true) {
           this.currentCource(text, userId);
-                }
+        }
         if (citiesKeys.includes(text) && FLAGCONTACTS === true) {
           this.sendContactsForUser(text, userId);
-                }
+        }
         if (citiesKeys.includes(text) && FLAGADDRESS === true) {
-          this.sendAddressMSG(text,userId,language);
-                }
+          this.sendAddressMSG(text, userId, language);
+        }
         //тут надо добавить на инфо шляпу
         break;
     }
@@ -194,8 +194,8 @@ class NewBot {
   setLanguageMenu(userInput) {
     const keyboard = [
       [{ text: "🇺🇦 Українська" }],
-      [{ text: "🇺🇸 English" }, { text: "🇵🇱 Polski" }, { text: "🏳️ Русский" }]
-  ];
+      [{ text: "🇺🇸 English" }, { text: "🇵🇱 Polski" }, { text: "🏳️ Русский" }],
+    ];
     const chatId = userInput.chat.id;
 
     // Отправка сообщения с клавиатурой
@@ -319,30 +319,33 @@ class NewBot {
     const actualText = "📈 " + questions[language].options[2];
     const startOverText = "ℹ️ " + questions[language].options[3];
     const addresses = "📍 " + questions[language].options[4];
-
+    const calculator = "🧮 " + questions[language].options[5];
     return {
       keyboard: [
         [{ text: kursText }, { text: contactText }],
         [{ text: actualText }, { text: startOverText }],
-        [{ text: addresses }],
+        [{ text: addresses }, {text: calculator,
+          web_app: {
+            url: "https://widthdoctor.github.io/test_rep/calculator.html"
+          }}],
       ],
       resize_keyboard: true, // Можете убрать, если не требуется
       one_time_keyboard: true,
     };
   }
 
-  sendAddressMSG(text, userId,language) {
+  sendAddressMSG(text, userId, language) {
     switch (text) {
       case "Krakow":
       case "Краков":
       case "Kraków":
-        case "Краків":
+      case "Краків":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
@@ -355,33 +358,33 @@ class NewBot {
           "<b>Kantor 1913 Wrocław</b>\n \n<b>email</b> 📬: kantor1913.wroclaw1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
-        case "Пшемишль":
+      case "Пшемишль":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Przemyśl</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
-        case "Гданськ":
+      case "Гданськ":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Gdańsk</b>\n \n<b>email</b> 📬: kantor1913.gdansk1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
@@ -393,7 +396,7 @@ class NewBot {
           "<b>Kantor 1913 Łódź</b>\n \n<b>email</b> 📬: kantor1913.lodz1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
@@ -404,20 +407,20 @@ class NewBot {
           "<b>Kantor 1913 Warszawa</b>\n \n<b>email</b> 📬: kantor1913.warszawa1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
-        case "Краків ПКП":
+      case "Краків ПКП":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Kraków (PKP)</b>\n \n<b>email</b> 📬: kantor1913.krakow2@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
@@ -429,7 +432,7 @@ class NewBot {
           "<b>Kantor 1913 Rzeszów</b>\n \n<b>email</b> 📬: kantor1913.rzeszow1@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/wXHnDweKBnkqpa5fA'>ul. Świętego Mikołaja 7, 35-005 Rzeszów</a>\n🕘 8:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
@@ -441,19 +444,19 @@ class NewBot {
           "<b>Kantor 1913 Poznań</b>\n \n<b>email</b> 📬: kantor1913.poznan@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/gMUcWtqfekznnd8c7'>ul. Głogowska 51/2, 60-738 Poznań</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
       case "Lublin":
       case "Люблин":
-        case "Люблін":
+      case "Люблін":
         bot.sendMessage(
           userId,
           "<b>Kantor 1913 Lublin</b>\n \n<b>email</b> 📬: kantor1913.lublin@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/Sb7yJuHtXfn1tVB96'>ul. 1 Maja 30, 20-410 Lublin</a>\n🕘 8:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
@@ -464,13 +467,12 @@ class NewBot {
           "<b>Kantor 1913 Szczecin</b>\n \n<b>email</b> 📬: kantor1913.szczecin@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/3Rq4hHXkRjq9Ms757'>ul. Edmunda Bałuki 20, 70-407 Szczecin</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
-            parse_mode: "HTML"
+            parse_mode: "HTML",
           }
         );
         break;
 
       default:
-
         break;
     }
   }
@@ -515,8 +517,8 @@ class NewBot {
       en: "Contact us",
       ru: "Связаться с нами",
       pl: "Skontaktuj się z nami",
-      ukr: "Зв'яжіться з нами"
-  };
+      ukr: "Зв'яжіться з нами",
+    };
     switch (text) {
       case "Krakow":
       case "Краков":
@@ -533,13 +535,13 @@ class NewBot {
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
-        case"Пшемишль":
+      case "Пшемишль":
         phoneNumber = "+48500560146";
         break;
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
-        case"Гданськ":
+      case "Гданськ":
         phoneNumber = "+48500560146";
         break;
       case "Lodz":
@@ -554,7 +556,7 @@ class NewBot {
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
-        case"Краків ПКП":
+      case "Краків ПКП":
         phoneNumber = "+48500560146";
         break;
       case "Rzeszow":
@@ -569,7 +571,7 @@ class NewBot {
         break;
       case "Lublin":
       case "Люблин":
-        case"Люблін":
+      case "Люблін":
         phoneNumber = "+48500560146";
         break;
       case "Szczecin":
@@ -590,14 +592,14 @@ class NewBot {
       en: "Contact the manager",
       ru: "Связь с менеджером",
       pl: "Kontakt z menedżerem",
-      ukr: "Зв'яжіться з менеджером"
+      ukr: "Зв'яжіться з менеджером",
     };
     setTimeout(() => {
       bot.sendMessage(userId, managerText[language], {
-          reply_markup: JSON.stringify(keyboard),
-          resize_keyboard: true,
+        reply_markup: JSON.stringify(keyboard),
+        resize_keyboard: true,
       });
-  }, 1000);
+    }, 1000);
   }
   selectCity(userLanguage, userInput) {
     const chatId = userInput.chat.id;
@@ -692,31 +694,38 @@ class NewBot {
 
     return flagEmojis[countryCode] || "";
   }
-  sendAboutInfo(language,userInput) {
+  sendAboutInfo(language, userInput) {
     const chatId = userInput.chat.id;
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
     const AboutMSG = questions.aboutUs[language];
-    bot.sendMessage(chatId, AboutMSG,{
+    bot.sendMessage(chatId, AboutMSG, {
       reply_markup: this.kantorMenu(language),
     });
   }
-  actualMultitul(language,userInput) {
+  actualMultitul(language, userInput) {
     const chatId = userInput.chat.id;
     const actualMSG = this.firstNewsPaper(language);
-    bot.sendMessage(chatId,actualMSG,{
+    bot.sendMessage(chatId, actualMSG, {
       reply_markup: this.kantorMenu(language),
-      parse_mode: 'HTML' })
+      parse_mode: "HTML",
+    });
   }
   firstNewsPaper(language) {
     const paymentInfo = {
       ru: "<b>Оплата картой</b> 💳\nУважаемые клиенты, с радостью сообщаем вам, что теперь вы можете обменивать свои деньги с помощью банковской карты.\nЭта транзакция будет включать минимальную плату:\nПольская карта - 1,0% от курса продажи\nИностранная карта - 3,0% от курса продажи\n(Лимит единиц транзакций 1000)",
       en: "<b>Card Payment</b> 💳\nDear Customers, we are pleased to inform you that you can now exchange your money using a debit/credit card.\nThis transaction will incur a minimum fee:\nPolish card - 1.0% to the selling rate\nForeign card - 3.0% to the selling rate\n(Transaction units limit 1000)",
       pl: "<b>Płatność kartą</b> 💳\nSzanowni Klienci, z przyjemnością informujemy, że od teraz możesz wymieniać swoje pieniądze za pomocą karty płatniczej.\nTa transakcja będzie podlegać minimalnej opłacie:\nKarta polska - 1,0% do kursu sprzedaży\nKarta zagraniczna - 3,0% do kursu sprzedaży\n(Limit jednostek transakcji 1000)",
-      ukr: "<b>Оплата карткою</b> 💳\nШановні клієнти, ми раді повідомити вам, що тепер ви можете обмінювати свої гроші за допомогою банківської картки.\nЦя транзакція вимагатиме мінімальну комісію:\nПольська картка - 1,0% від курсу продажу\nІноземна картка - 3,0% від курсу продажу\n(Обмеження одиниць транзакцій 1000)"
+      ukr: "<b>Оплата карткою</b> 💳\nШановні клієнти, ми раді повідомити вам, що тепер ви можете обмінювати свої гроші за допомогою банківської картки.\nЦя транзакція вимагатиме мінімальну комісію:\nПольська картка - 1,0% від курсу продажу\nІноземна картка - 3,0% від курсу продажу\n(Обмеження одиниць транзакцій 1000)",
     };
     return paymentInfo[language];
   }
+  // calculator(userInput) {
+  //   const chatId = userInput.chat.id;
+  //   const link = "https://widthdoctor.github.io/test_rep/calculator.html"; // ваша ссылка на HTML-файл
+
+
+  // }
 }
 
 const myBot = new NewBot(); // Создаем экземпляр класса
