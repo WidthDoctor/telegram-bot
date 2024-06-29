@@ -1,5 +1,7 @@
 // npm run dev
-const token = "6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ";
+// 7335216321:AAHsftZsYkU12cvz6IjKUIX1z6MK3SY40ww тестовый
+// 6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ продакшен
+const token = "7335216321:AAHsftZsYkU12cvz6IjKUIX1z6MK3SY40ww";
 const fs = require("fs");
 const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
@@ -46,13 +48,19 @@ class NewBot {
         }
         currencyRates[currencyId][exchangeType] = content;
       });
-
+      console.log(currencyRates);
       this.sendCurrentRate(currencyRates, userId, city);
     } catch (error) {
       console.error("Произошла ошибка:", error);
     }
   } //курс
   commands() {
+    bot.on('message',(msg)=>{
+      if(msg.web_app_data){
+        const data= JSON.parse(msg.web_app_data.data);
+        console.log(`получено сообщение: ${data.message}`)
+      }
+    })
     bot.on("message", (userInput) => {
       const usersBaseData = fs.readFileSync("usersBase.json");
       const text = userInput.text;
@@ -177,6 +185,8 @@ class NewBot {
         FLAGADDRESS = false;
         this.actualMultitul(language, userInput);
         break;
+      // case text.match(/🧮/i) ? text : null:
+      //   break;
       default:
         if (citiesKeys.includes(text) && FLAGKURS === true) {
           this.currentCource(text, userId);
@@ -324,16 +334,23 @@ class NewBot {
       keyboard: [
         [{ text: kursText }, { text: contactText }],
         [{ text: actualText }, { text: startOverText }],
-        [{ text: addresses }, {text: calculator,
-          web_app: {
-            url: "https://widthdoctor.github.io/test_rep/calculator.html"
-          }}],
+        [
+          { text: addresses },
+          {
+            text: calculator,
+            web_app: {
+              url: "https://widthdoctor.github.io/calculator_currency/calculator",
+              request_write_access:true
+              // https://tiana.by/
+              // https://widthdoctor.github.io/calculator_currency/calculator
+            },
+          },
+        ],
       ],
       resize_keyboard: true, // Можете убрать, если не требуется
       one_time_keyboard: true,
     };
   }
-
   sendAddressMSG(text, userId, language) {
     switch (text) {
       case "Krakow":
@@ -720,14 +737,7 @@ class NewBot {
     };
     return paymentInfo[language];
   }
-  // calculator(userInput) {
-  //   const chatId = userInput.chat.id;
-  //   const link = "https://widthdoctor.github.io/test_rep/calculator.html"; // ваша ссылка на HTML-файл
-
-
-  // }
 }
-
 const myBot = new NewBot(); // Создаем экземпляр класса
 myBot.commands();
 // myBot.cerrentCource();
