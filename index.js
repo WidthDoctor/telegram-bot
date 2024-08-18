@@ -764,10 +764,10 @@ class NewBot {
     const result = (sum / rate) * (1 - 0.026);
     let message = `${result.toFixed(0)} usdt`;
     let text = {
-      en: `I calculated, it came out to ${message}. Just in case, check with the manager.`,
-      ru: `Я посчитал, вышло ${message}. На всякий случай уточни у менеджера.`,
-      pl: `Policzyłem, wyszło ${message}. Na wszelki wypadek sprawdź to z menedżerem.`,
-      ukr: `Я порахував, вийшло ${message}. Про всяк випадок уточни у менеджера.`
+      en: `We calculated, it came out to ${message}. Just in case, check with the manager.`,
+      ru: `Мы посчитали, вышло ${message}. На всякий случай уточните у менеджера.`,
+      pl: `Policzyliśmy, wyszło ${message}. Na wszelki wypadek sprawdź to z menedżerem.`,
+      ukr: `Ми порахували, вийшло ${message}. Про всяк випадок уточніть у менеджера.`
     };
     console.log('Курс для расчета:', rate);
     console.log('Исходная сумма в злотых:', sum);
