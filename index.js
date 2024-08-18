@@ -546,59 +546,59 @@ class NewBot {
       case "Краков":
       case "Kraków":
       case "Краків":
-        phoneNumber = "+48500560146"; // Номер телефона для отправки сообщения
+        phoneNumber = "+48737948884"; // Номер телефона для отправки сообщения
         break;
 
       case "Wrocław":
       case "Вроцлав":
       case "Wroclaw":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
       case "Пшемишль":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
       case "Гданськ":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Lodz":
       case "Łódź":
       case "Лодзь":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Warszawa":
       case "Варшава":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
       case "Краків ПКП":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Rzeszow":
       case "Rzeszów":
       case "Жешув":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Poznan":
       case "Poznań":
       case "Познань":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Lublin":
       case "Люблин":
       case "Люблін":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
       case "Szczecin":
       case "Щецин":
-        phoneNumber = "+48500560146";
+        phoneNumber = "+48737948884";
         break;
 
       default:
@@ -607,7 +607,7 @@ class NewBot {
     const chatUrl = `https://t.me/${phoneNumber}`;
 
     const keyboard = {
-      inline_keyboard: [[{ text: contactName[language], url: chatUrl }]],
+      inline_keyboard: [[{ text: contactName[language], url: chatUrl}]],
       resize_keyboard: true, // Разрешить кнопкам изменять размер для соответствия экрану
     };
     const managerText = {
@@ -762,7 +762,7 @@ class NewBot {
 
     // Рассчитываем итоговую сумму с учетом комиссии 2.6%
     const result = (sum / rate) * (1 - 0.026);
-    let message = `${result.toFixed(0)} zl`;
+    let message = `${result.toFixed(0)} usdt`;
     let text = {
       en: `I calculated, it came out to ${message}. Just in case, check with the manager.`,
       ru: `Я посчитал, вышло ${message}. На всякий случай уточни у менеджера.`,
