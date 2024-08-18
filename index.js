@@ -1,7 +1,7 @@
 // npm run dev
 // 7335216321:AAHsftZsYkU12cvz6IjKUIX1z6MK3SY40ww тестовый
 // 6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ продакшен
-const token = "7335216321:AAHsftZsYkU12cvz6IjKUIX1z6MK3SY40ww";
+const token = "6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ";
 const fs = require("fs");
 const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
@@ -13,6 +13,8 @@ let FLAGKURS = false;
 let FLAGCONTACTS = false;
 let FLAGADDRESS = false;
 let language = "";
+let kursToCalculate
+
 class NewBot {
   constructor() {
     this.usersBaseFilePath = "usersBase.json";
@@ -50,6 +52,7 @@ class NewBot {
       });
       console.log(currencyRates);
       this.sendCurrentRate(currencyRates, userId, city);
+      kursToCalculate = currencyRates;
     } catch (error) {
       console.error("Произошла ошибка:", error);
     }
@@ -58,7 +61,9 @@ class NewBot {
     bot.on('message',(msg)=>{
       if(msg.web_app_data){
         const data= JSON.parse(msg.web_app_data.data);
-        console.log(`получено сообщение: ${data.message}`)
+        const summa = data.sum
+        const userId = msg.from.id;
+        this.calculateSum(summa,userId);
       }
     })
     bot.on("message", (userInput) => {
@@ -520,9 +525,9 @@ class NewBot {
     bot.sendMessage(userId, actualCurseMsg[language], {
       reply_markup: JSON.stringify({ inline_keyboard: buttons }),
     });
-
     this.sendContactsForUser(text, userId);
     return JSON.stringify({ inline_keyboard: buttons });
+
   }
   sendContactsForUser(text, userId) {
     const usersBaseData = fs.readFileSync("usersBase.json");
@@ -616,7 +621,20 @@ class NewBot {
         reply_markup: JSON.stringify(keyboard),
         resize_keyboard: true,
       });
+      this.whatelse(userId,language)
     }, 1000);
+  }
+  whatelse(userId, language){
+    let text = {
+      en: "Shall we look at something else?",
+      ru: "Посмотрим что-то еще?",
+      pl: "Zobaczymy coś jeszcze?",
+      ukr: "Подивимось ще щось?",
+    }
+    bot.sendMessage(userId, text[language], {
+      reply_markup: this.kantorMenu(language),
+      resize_keyboard: true,
+    });
   }
   selectCity(userLanguage, userInput) {
     const chatId = userInput.chat.id;
@@ -726,6 +744,37 @@ class NewBot {
     bot.sendMessage(chatId, actualMSG, {
       reply_markup: this.kantorMenu(language),
       parse_mode: "HTML",
+    });
+  }
+  calculateSum(sum,userId) {
+    const usersBaseData = fs.readFileSync("usersBase.json");
+    const usersBase = JSON.parse(usersBaseData);
+    const user = usersBase.find((user) => user.userId === userId);
+    const language = user.language;
+    console.log(language);
+
+    let rate = 3.905; // базовый курс по умолчанию
+    if (kursToCalculate && kursToCalculate.USD && kursToCalculate.USD.ds) {
+
+      rate = parseFloat(kursToCalculate.USD.ds);
+      console.log(rate);
+    }
+
+    // Рассчитываем итоговую сумму с учетом комиссии 2.6%
+    const result = (sum / rate) * (1 - 0.026);
+    let message = `${result.toFixed(0)} zl`;
+    let text = {
+      en: `I calculated, it came out to ${message}. Just in case, check with the manager.`,
+      ru: `Я посчитал, вышло ${message}. На всякий случай уточни у менеджера.`,
+      pl: `Policzyłem, wyszło ${message}. Na wszelki wypadek sprawdź to z menedżerem.`,
+      ukr: `Я порахував, вийшло ${message}. Про всяк випадок уточни у менеджера.`
+    };
+    console.log('Курс для расчета:', rate);
+    console.log('Исходная сумма в злотых:', sum);
+    console.log('Результирующая сумма в USDT:', result.toFixed(0));
+    bot.sendMessage(userId, text[language], {
+      reply_markup: this.kantorMenu(language),
+      resize_keyboard: true,
     });
   }
   firstNewsPaper(language) {
