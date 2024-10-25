@@ -1,7 +1,9 @@
 // npm run dev
+//7525570494:AAHa7O4Riwznvo1wBQPDaFkFQbQ2bGfVQ3w
 // 7335216321:AAHsftZsYkU12cvz6IjKUIX1z6MK3SY40ww тестовый
 // 6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ продакшен
-const token = "6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ";
+const dotenv = require('dotenv').config();
+const token = process.env.API_TOKEN;
 const fs = require("fs");
 const telegramApi = require("node-telegram-bot-api");
 const bot = new telegramApi(token, { polling: true });
@@ -178,7 +180,7 @@ class NewBot {
         FLAGADDRESS = true;
         this.sendAddressMenu(language, userInput);
         break;
-      case text.match(/ℹ️/i) ? text : null:
+      case text.match(/🌐/i) ? text : null:
         FLAGKURS = false;
         FLAGCONTACTS = false;
         FLAGADDRESS = false;
@@ -332,7 +334,7 @@ class NewBot {
     const kursText = "💱 " + questions[language].options[0];
     const contactText = "📨 " + questions[language].options[1];
     const actualText = "📈 " + questions[language].options[2];
-    const startOverText = "ℹ️ " + questions[language].options[3];
+    const startOverText = "🌐 " + questions[language].options[3];
     const addresses = "📍 " + questions[language].options[4];
     const calculator = "🧮 " + questions[language].options[5];
     return {
@@ -364,7 +366,7 @@ class NewBot {
       case "Краків":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Kraków</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -377,7 +379,7 @@ class NewBot {
       case "Wroclaw":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Wrocław</b>\n \n<b>email</b> 📬: kantor1913.wroclaw1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -390,7 +392,7 @@ class NewBot {
       case "Пшемишль":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Przemyśl</b>\n \n<b>email</b> 📬: kantor1913.krakow1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -403,7 +405,7 @@ class NewBot {
       case "Гданськ":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Gdańsk</b>\n \n<b>email</b> 📬: kantor1913.gdansk1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -415,7 +417,7 @@ class NewBot {
       case "Лодзь":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Łódź</b>\n \n<b>email</b> 📬: kantor1913.lodz1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -426,7 +428,7 @@ class NewBot {
       case "Варшава":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Warszawa</b>\n \n<b>email</b> 📬: kantor1913.warszawa1@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -439,7 +441,7 @@ class NewBot {
       case "Краків ПКП":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Kraków (PKP)</b>\n \n<b>email</b> 📬: kantor1913.krakow2@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -451,7 +453,7 @@ class NewBot {
       case "Жешув":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Rzeszów</b>\n \n<b>email</b> 📬: kantor1913.rzeszow1@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/wXHnDweKBnkqpa5fA'>ul. Świętego Mikołaja 7, 35-005 Rzeszów</a>\n🕘 8:00-20:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/wXHnDweKBnkqpa5fA'>ul. Świętego Mikołaja 7, 35-005 Rzeszów</a>\n🕘 8:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -463,7 +465,7 @@ class NewBot {
       case "Познань":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Poznań</b>\n \n<b>email</b> 📬: kantor1913.poznan@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/gMUcWtqfekznnd8c7'>ul. Głogowska 51/2, 60-738 Poznań</a>\n🕘 9:00-21:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/gMUcWtqfekznnd8c7'>ul. Głogowska 51/2, 60-738 Poznań</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -475,7 +477,7 @@ class NewBot {
       case "Люблін":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Lublin</b>\n \n<b>email</b> 📬: kantor1913.lublin@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/Sb7yJuHtXfn1tVB96'>ul. 1 Maja 30, 20-410 Lublin</a>\n🕘 8:00-20:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/Sb7yJuHtXfn1tVB96'>ul. 1 Maja 30, 20-410 Lublin</a>\n🕘 8:00-20:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -486,7 +488,7 @@ class NewBot {
       case "Щецин":
         bot.sendMessage(
           userId,
-          "<b>Kantor 1913 Szczecin</b>\n \n<b>email</b> 📬: kantor1913.szczecin@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/3Rq4hHXkRjq9Ms757'>ul. Edmunda Bałuki 20, 70-407 Szczecin</a>\n🕘 9:00-21:00",
+          "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/3Rq4hHXkRjq9Ms757'>ul. Edmunda Bałuki 20, 70-407 Szczecin</a>\n🕘 9:00-21:00",
           {
             reply_markup: this.kantorMenu(language),
             parse_mode: "HTML",
@@ -546,59 +548,59 @@ class NewBot {
       case "Краков":
       case "Kraków":
       case "Краків":
-        phoneNumber = "+48737948884"; // Номер телефона для отправки сообщения
+        phoneNumber = "+48453323337"; // Номер телефона для отправки сообщения
         break;
 
       case "Wrocław":
       case "Вроцлав":
       case "Wroclaw":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Przemysl":
       case "Przemyśl":
       case "Пшемысль":
       case "Пшемишль":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Gdansk":
       case "Gdańsk":
       case "Гданьск":
       case "Гданськ":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Lodz":
       case "Łódź":
       case "Лодзь":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Warszawa":
       case "Варшава":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "KrakowPKP":
       case "Kraków PKP":
       case "Краков ПКП":
       case "Краків ПКП":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Rzeszow":
       case "Rzeszów":
       case "Жешув":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Poznan":
       case "Poznań":
       case "Познань":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Lublin":
       case "Люблин":
       case "Люблін":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
       case "Szczecin":
       case "Щецин":
-        phoneNumber = "+48737948884";
+        phoneNumber = "+48453323337";
         break;
 
       default:
@@ -731,21 +733,153 @@ class NewBot {
   }
   sendAboutInfo(language, userInput) {
     const chatId = userInput.chat.id;
-    const questionsData = fs.readFileSync("questions.json");
-    const questions = JSON.parse(questionsData);
-    const AboutMSG = questions.aboutUs[language];
-    bot.sendMessage(chatId, AboutMSG, {
-      reply_markup: this.kantorMenu(language),
-    });
+    const instagramIcon = '📷'; // Символ, похожий на Instagram
+    const facebookIcon = '🅕';  // Символ, похожий на Facebook
+
+    const instagramUrl = 'https://www.instagram.com/cliptech.inc/?igsh=MTEwdThwMXRycWgxbw%3D%3D&utm_source=qr'; // замените на ваш URL Instagram
+    const facebookUrl = 'https://www.facebook.com/profile.php?id=61567262404118';   // замените на ваш URL Facebook
+
+    const options = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: `${instagramIcon} Instagram`, url: instagramUrl },
+            { text: `${facebookIcon} Facebook`, url: facebookUrl },
+          ],
+        ],
+      },
+    };
+
+    const message = 'Nasze linki do Instagrama i Facebooka:';
+
+    bot.sendMessage(chatId, message, options);
+    setTimeout(() => {
+      this.whatelse(chatId, language);
+    }, 2000);
   }
   actualMultitul(language, userInput) {
     const chatId = userInput.chat.id;
-    const actualMSG = this.firstNewsPaper(language);
-    bot.sendMessage(chatId, actualMSG, {
-      reply_markup: this.kantorMenu(language),
-      parse_mode: "HTML",
+
+    // Создаем текст для каждого раздела на польском
+    const sections = {
+        news: {
+            title: 'Aktualne wiadomości',
+            content: 'Tutaj będą świeże wiadomości o Twoich produktach, wydarzeniach i ofertach. Śledź aktualizacje!'
+        },
+        prices: {
+            title: 'Ceny usług',
+            content: 'Wyświetlaj aktualne ceny swoich usług, aby użytkownicy mogli szybko zapoznać się z cennikiem.'
+        },
+        promotions: {
+            title: 'Specjalne promocje',
+            content: 'Informuj klientów o zniżkach i promocjach, aby nie przegapili korzystnych ofert.'
+        },
+        faq: {
+            title: 'FAQ i przydatne wskazówki',
+            content: 'Podaj użytkownikom informacje na temat często zadawanych pytań lub przydatne porady.'
+        }
+    };
+
+    // Создаем кнопки для каждого раздела и главного меню
+    const inlineKeyboard = [
+        [
+            { text: sections.news.title, callback_data: 'toggle_news' },
+            { text: sections.prices.title, callback_data: 'toggle_prices' },
+        ],
+        [
+            { text: sections.promotions.title, callback_data: 'toggle_promotions' },
+            { text: sections.faq.title, callback_data: 'toggle_faq' },
+        ],
+        [
+            { text: 'Do głównego menu', callback_data: 'go_to_main_menu' }
+        ]
+    ];
+
+    // Начальное сообщение на польском
+    let initialMessage = 'Wybierz sekcję, aby dowiedzieć się więcej:';
+
+    // Отправляем сообщение с кнопками
+    bot.sendMessage(chatId, initialMessage, {
+        reply_markup: {
+            inline_keyboard: inlineKeyboard,
+            resize_keyboard: true,
+            one_time_keyboard: false
+        }
+    }).then(sentMessage => {
+        // Хранение текущего состояния
+        const sectionStates = {
+            news: false,
+            prices: false,
+            promotions: false,
+            faq: false
+        };
+
+        // Обработка нажатий на кнопки
+        const handleCallbackQuery = (query) => {
+            const { data } = query;
+            let responseMessage = 'Wybierz sekcję, aby dowiedzieć się więcej:';
+
+            // Логика разворачивания и сворачивания текста
+            switch (data) {
+                case 'toggle_news':
+                    sectionStates.news = !sectionStates.news; // Переключаем состояние
+                    responseMessage += sectionStates.news ? `\n\n${sections.news.content}` : '';
+                    break;
+                case 'toggle_prices':
+                    sectionStates.prices = !sectionStates.prices;
+                    responseMessage += sectionStates.prices ? `\n\n${sections.prices.content}` : '';
+                    break;
+                case 'toggle_promotions':
+                    sectionStates.promotions = !sectionStates.promotions;
+                    responseMessage += sectionStates.promotions ? `\n\n${sections.promotions.content}` : '';
+                    break;
+                case 'toggle_faq':
+                    sectionStates.faq = !sectionStates.faq;
+                    responseMessage += sectionStates.faq ? `\n\n${sections.faq.content}` : '';
+                    break;
+                    case 'go_to_main_menu':
+                      // Удаляем обработчик перед вызовом функции
+                      bot.removeListener('callback_query', handleCallbackQuery);
+                      // Удаляем текущее сообщение с кнопками
+                      bot.deleteMessage(chatId, query.message.message_id)
+                          .then(() => {
+                              // После удаления сообщения вызываем функцию для перехода в главное меню
+                              this.whatelse(chatId, language);
+                          })
+                          .catch(err => {
+                              console.error("Error deleting message:", err);
+                          });
+                      return;
+                default:
+                    break;
+            }
+
+            // Проверяем, изменилось ли сообщение
+            if (responseMessage !== query.message.text) {
+                // Обновляем сообщение с кнопками
+                bot.editMessageText(responseMessage, {
+                    chat_id: chatId,
+                    message_id: query.message.message_id,
+                    reply_markup: {
+                        inline_keyboard: inlineKeyboard,
+                        resize_keyboard: true,
+                        one_time_keyboard: false
+                    }
+                }).catch(err => {
+                    console.error("Error editing message:", err);
+                });
+            }
+
+            bot.answerCallbackQuery(query.id); // Подтверждаем нажатие кнопки
+        };
+
+        // Добавляем обработчик событий только один раз
+        bot.on('callback_query', handleCallbackQuery);
     });
-  }
+}
+
+
+
   calculateSum(sum,userId) {
     const usersBaseData = fs.readFileSync("usersBase.json");
     const usersBase = JSON.parse(usersBaseData);
