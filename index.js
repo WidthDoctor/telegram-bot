@@ -1,7 +1,7 @@
 // npm run dev
 //7525570494:AAHa7O4Riwznvo1wBQPDaFkFQbQ2bGfVQ3w
 // 7335216321:AAHsftZsYkU12cvz6IjKUIX1z6MK3SY40ww тестовый
-// 6932587854:AAFB7c2L_qWqmHYGu3dR494NiCmRzk53AWQ продакшен
+// 7525570494:AAHa7O4Riwznvo1wBQPDaFkFQbQ2bGfVQ3w продакшен
 const dotenv = require('dotenv').config();
 const token = process.env.API_TOKEN;
 const fs = require("fs");
@@ -763,7 +763,7 @@ class NewBot {
     // Создаем текст для каждого раздела на польском
     const sections = {
         news: {
-            title: 'Aktualne wiadomości',
+            title: 'Wiadomości',
             content: 'Tutaj będą świeże wiadomości o Twoich produktach, wydarzeniach i ofertach. Śledź aktualizacje!'
         },
         prices: {
@@ -775,7 +775,7 @@ class NewBot {
             content: 'Informuj klientów o zniżkach i promocjach, aby nie przegapili korzystnych ofert.'
         },
         faq: {
-            title: 'FAQ i przydatne wskazówki',
+            title: 'FAQ',
             content: 'Podaj użytkownikom informacje na temat często zadawanych pytań lub przydatne porady.'
         }
     };
