@@ -5,7 +5,9 @@
       "startIn": "What are you interested in?",
       "start": "Let's continue here. What are you interested in?",
       "question": "What information do you need?",
-      "options": ["Currency exchange rate", "Contacts", "Updates", "Our resources","Our branch addresses","Calculator"]
+      "options": ["Currency exchange rate", "Contacts", "Updates", "Our resources","Our addresses","Calculator","Read the newspaper","To the main menu"],
+      "featuresText": ["Functionality"],
+      "orderButton":["Order a bot"]
     },
     "ru": {
       "contactQuestion":"С менеджером какого города нужно связаться?",
@@ -13,7 +15,9 @@
       "startIn": "Что тебя интересует?",
       "start": "Давай продолжим здесь. Что тебя интересует?",
       "question": "Какая информация вам нужна?",
-      "options": ["Курс валют", "Контакты", "Актуальное", "Наши ресурсы","Адреса наших отделений","Калькулятор"]
+      "options": ["Курс валют", "Контакты", "Актуальное", "Наши ресурсы","Адреса отделений","Калькулятор","Читать газету","В главное меню"],
+      "featuresText": ["Функционал"],
+      "orderButton":["Заказать бота"]
     },
     "pl": {
       "contactQuestion": "Z jakim menedżerem miasta należy się skontaktować?",
@@ -21,7 +25,9 @@
       "startIn": "Jak mogę ci pomóc?",
       "start": "Kontynuujmy tutaj. Jak mogę ci pomóc?",
       "question": "Jakie informacje potrzebujesz?",
-      "options": ["Kurs walut", "Kontakt", "Aktualne", "Nasze zasoby","Adresy naszych oddziałów","Kalkulator"]
+      "options": ["Kurs walut", "Kontakt", "Aktualne", "Nasze zasoby","Adresy oddziałów","Kalkulator","Czytać gazetę","Do głównego menu"],
+      "featuresText": ["Funkcjonalność"],
+      "orderButton":["Zamówić bota"]
     },
     "ukr":{
       "contactQuestion": "З яким керівником міста потрібно зв'язатися?",
@@ -29,7 +35,9 @@
       "startIn": "Що вас цікавить?",
       "start": "Продовжимо тут. Що вас цікавить?",
       "question": "Яку інформацію вам потрібно?",
-      "options": ["Курс валют", "Контакт", "Актуальне", "Наші ресурси", "Адреси наших відділень","Калькулятор"]
+      "options": ["Курс валют", "Контакт", "Актуальне", "Наші ресурси", "Адреси відділень","Калькулятор","Читати газету","До головного меню"],
+      "featuresText": ["Функціонал"],
+      "orderButton":["Замовити бота"]
     },
     "cities":["Krakow","Wroclaw","Przemysl","Gdansk","Lodz","Warszawa","KrakowPKP","Rzeszow","Poznan","Lublin","Szczecin"],
 

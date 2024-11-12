@@ -40,11 +40,6 @@
     "language": "pl"
   },
   {
-    "username": "K7KEHT",
-    "userId": 380209958,
-    "language": "ukr"
-  },
-  {
     "username": "ilyasius",
     "userId": 331858708,
     "language": "ukr"
@@ -52,6 +47,11 @@
   {
     "username": "WidthDoctor",
     "userId": 299219486,
-    "language": "pl"
+    "language": "en"
+  },
+  {
+    "username": "K7KEHT",
+    "userId": 380209958,
+    "language": "ukr"
   }
 ]

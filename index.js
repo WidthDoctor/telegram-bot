@@ -2,7 +2,7 @@
 //7525570494:AAHa7O4Riwznvo1wBQPDaFkFQbQ2bGfVQ3w
 // 7335216321:AAHsftZsYkU12cvz6IjKUIX1z6MK3SY40ww тестовый
 // 7525570494:AAHa7O4Riwznvo1wBQPDaFkFQbQ2bGfVQ3w продакшен
-const dotenv = require('dotenv').config();
+const dotenv = require("dotenv").config();
 const token = process.env.API_TOKEN;
 const fs = require("fs");
 const telegramApi = require("node-telegram-bot-api");
@@ -15,7 +15,7 @@ let FLAGKURS = false;
 let FLAGCONTACTS = false;
 let FLAGADDRESS = false;
 let language = "";
-let kursToCalculate
+let kursToCalculate;
 
 class NewBot {
   constructor() {
@@ -60,14 +60,14 @@ class NewBot {
     }
   } //курс
   commands() {
-    bot.on('message',(msg)=>{
-      if(msg.web_app_data){
-        const data= JSON.parse(msg.web_app_data.data);
-        const summa = data.sum
+    bot.on("message", (msg) => {
+      if (msg.web_app_data) {
+        const data = JSON.parse(msg.web_app_data.data);
+        const summa = data.sum;
         const userId = msg.from.id;
-        this.calculateSum(summa,userId);
+        this.calculateSum(summa, userId);
       }
-    })
+    });
     bot.on("message", (userInput) => {
       const usersBaseData = fs.readFileSync("usersBase.json");
       const text = userInput.text;
@@ -93,7 +93,7 @@ class NewBot {
           break;
         default:
           this.KONTROL_PANEL_LANGUAGE(userInput, text);
-          this.KONTROL_PANEL_SECONDMENU(userInput); //контролка на языки
+          this.KONTROL_PANEL_MULTITUL(userInput); //контролка на языки
           break;
       }
     });
@@ -147,7 +147,7 @@ class NewBot {
         break;
     }
   }
-  KONTROL_PANEL_SECONDMENU(userInput) {
+  KONTROL_PANEL_MULTITUL(userInput) {
     const usersBaseData = fs.readFileSync("usersBase.json");
     const text = userInput.text;
     const usersBase = JSON.parse(usersBaseData);
@@ -158,16 +158,13 @@ class NewBot {
     );
     const user = usersBase.find((user) => user.userId === userId);
     const language = user.language;
-    switch (
-      text //!Баг при выборе разными пользователями разных меню. Бот не может в многопоточность и поэтому надо сделать запись в профиль его выбора, чтобы потом продолжать откуда надо и небыло перекрещивания
-    ) {
+    switch (text) {
       case text.match(/💱/i) ? text : null:
         FLAGKURS = true;
         FLAGADDRESS = false;
         FLAGCONTACTS = false;
         this.selectCity(language, userInput);
         break;
-      case "/contact":
       case text.match(/📨/i) ? text : null:
         FLAGKURS = false;
         FLAGADDRESS = false;
@@ -192,8 +189,15 @@ class NewBot {
         FLAGADDRESS = false;
         this.actualMultitul(language, userInput);
         break;
-      // case text.match(/🧮/i) ? text : null:
-      //   break;
+      case text.match(/🛠️/i) ? text : null:
+        this.sendFeaturesMenu(language, userInput);
+        break;
+      case text.match(/↩️/i) ? text : null:
+        this.sendGeneralMenu(userInput, language);
+        break;
+      case text.match(/📝/i) ? text : null:
+        this.orderBotButton(userInput, language);
+        break;
       default:
         if (citiesKeys.includes(text) && FLAGKURS === true) {
           this.currentCource(text, userId);
@@ -231,6 +235,39 @@ class NewBot {
         console.error("Ошибка при отправке клавиатуры:", error);
       });
   }
+  orderBotButton(userInput, language){
+    console.log(userInput.from.username);
+
+    const chatId = userInput.chat.id;
+    const cliptechChat = 380209958;
+    let text = {
+      en: "<b>Great!</b>\n\nI’m passing your contact to our manager. Please, wait — someone will contact you shortly.",
+      ru: "<b>Отлично!</b>\n\nПередаю твой контакт нашему менеджеру. Пожалуйста, ожидай — в течение некоторого времени с тобой свяжутся.",
+      pl: "<b>Świetnie!</b>\n\nPrzekazuję Twój kontakt do naszego menedżera. Proszę, poczekaj — ktoś skontaktuje się z Tobą wkrótce.",
+      ukr: "<b>Чудово!</b>\n\nПередаю твій контакт нашому менеджеру. Будь ласка, чекай — з тобою зв’яжуться протягом деякого часу.",
+    };
+    let textToDenis ="Новый заказ! Напиши ему как сможешь"
+    bot.sendMessage(chatId, text[language], {
+      reply_markup: this.generalMenu(language),
+      resize_keyboard: true,
+      parse_mode: "HTML",
+    });
+
+
+    const chatUrl = `https://t.me/${chatId}`;
+
+    const keyboard = {
+      inline_keyboard: [[{ text: userInput.from.username, url: chatUrl }]],
+      resize_keyboard: true, // Разрешить кнопкам изменять размер для соответствия экрану
+    };
+
+    setTimeout(() => {
+      bot.sendMessage(cliptechChat, textToDenis, {
+        reply_markup: JSON.stringify(keyboard),
+        resize_keyboard: true,
+      });
+    }, 1000);
+  }
   async gotoPrivateChat(userInput) {
     try {
       const chatId = userInput.chat.id;
@@ -242,7 +279,7 @@ class NewBot {
       const user = usersBase.find((user) => user.userId === userId);
 
       if (!user) {
-        return; // Прерываем выполнение функции, если пользователь не найден в базе данных
+        this.setLanguageMenu(userInput);
       }
 
       const userLanguage = user.language;
@@ -258,7 +295,7 @@ class NewBot {
       }
       if (userId !== chatId) {
         await bot.sendMessage(userId, startMessage, {
-          // reply_markup: this.generalMenu(userLanguage),
+          // reply_markup: this.featuresMenu(userLanguage),
         });
       }
     } catch (error) {
@@ -331,32 +368,72 @@ class NewBot {
   generalMenu(language) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
+    const featuresButton = "🛠️ " + questions[language].featuresText[0];
+    const ourResourcesText = "🌐 " + questions[language].options[3];
+    const orderBotButton = "📝 " + questions[language].orderButton[0];
+    //
+    return {
+      keyboard: [
+        [{ text: featuresButton }, { text: ourResourcesText }],
+        [{ text: orderBotButton }],
+      ],
+      resize_keyboard: true, // Можете убрать, если не требуется
+      one_time_keyboard: true,
+    };
+  }
+  featuresMenu(language) {
+    const questionsData = fs.readFileSync("questions.json");
+    const questions = JSON.parse(questionsData);
     const kursText = "💱 " + questions[language].options[0];
     const contactText = "📨 " + questions[language].options[1];
     const actualText = "📈 " + questions[language].options[2];
-    const startOverText = "🌐 " + questions[language].options[3];
     const addresses = "📍 " + questions[language].options[4];
     const calculator = "🧮 " + questions[language].options[5];
+    const page = "📰 " + questions[language].options[6];
+    const back = "↩️ " + questions[language].options[7];
     return {
       keyboard: [
         [{ text: kursText }, { text: contactText }],
-        [{ text: actualText }, { text: startOverText }],
+        [{ text: actualText }, { text: addresses }],
         [
-          { text: addresses },
           {
             text: calculator,
             web_app: {
               url: "https://widthdoctor.github.io/calculator_currency/calculator",
-              request_write_access:true
+              request_write_access: true,
+              // https://tiana.by/
+              // https://widthdoctor.github.io/calculator_currency/calculator
+            },
+          },
+          {
+            text: page,
+            web_app: {
+              url: "https://www.gazeta.pl/0,0.html",
+              request_write_access: true,
               // https://tiana.by/
               // https://widthdoctor.github.io/calculator_currency/calculator
             },
           },
         ],
+        [{ text: back }],
       ],
       resize_keyboard: true, // Можете убрать, если не требуется
       one_time_keyboard: true,
     };
+  }
+  sendFeaturesMenu(language, userInput) {
+    const chatId = userInput.chat.id;
+    let text = {
+      en: "<b>In this menu, you can explore the bot's features and learn how they work.</b>\n\nAll pricing elements are collected here to help you choose the functions that are best suited for your business. Feel free to click on anything — everything is available for exploration!\n\n<b>To order the bot</b>\nsimply go to the main menu in the 'Our Resources' section (Instagram / Facebook) or contact us via the 'Order Bot' button.",
+      ru: "<b>В этом меню ты можешь ознакомиться с функциями бота и узнать, как они работают.</b>\n\nЗдесь собраны все элементы ценника, чтобы ты мог выбрать именно те функции, которые подойдут для твоего бизнеса. Не стесняйся нажимать на любые элементы — все доступно для исследования!\n\n<b>Чтобы заказать бота</b>\nпросто перейди в главное меню в раздел 'Наши ресурсы' (Instagram / Facebook) или свяжись с нами через кнопку 'Заказать бота'.",
+      pl: "<b>W tym menu możesz zapoznać się z funkcjami bota i dowiedzieć się, jak działają.</b>\n\nWszystkie elementy cenowe są tutaj zebrane, aby pomóc Ci wybrać funkcje, które najlepiej pasują do Twojego biznesu. Śmiało klikaj na wszystko — wszystko jest dostępne do eksploracji!\n\n<b>Aby zamówić bota</b>\npo prostu przejdź do głównego menu w sekcji 'Nasze zasoby' (Instagram / Facebook) lub skontaktuj się z nami za pomocą przycisku 'Zamów bota'.",
+      ukr: "<b>У цьому меню ти можеш ознайомитись з функціями бота та дізнатися, як вони працюють.</b>\n\nТут зібрані всі елементи цінника, щоб ти міг вибрати саме ті функції, які підходять для твого бізнесу. Не соромся натискати на будь-які елементи — все доступно для дослідження!\n\n<b>Щоб замовити бота</b>\nпросто перейдіть до головного меню в розділ 'Наші ресурси' (Instagram / Facebook) або зв'яжіться з нами через кнопку 'Замовити бота'.",
+    };
+    bot.sendMessage(chatId, text[language], {
+      reply_markup: this.featuresMenu(language),
+      resize_keyboard: true,
+      parse_mode: "HTML",
+    });
   }
   sendAddressMSG(text, userId, language) {
     switch (text) {
@@ -368,7 +445,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -381,7 +458,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -394,7 +471,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -407,7 +484,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -419,7 +496,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -430,7 +507,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -443,7 +520,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -455,7 +532,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/wXHnDweKBnkqpa5fA'>ul. Świętego Mikołaja 7, 35-005 Rzeszów</a>\n🕘 8:00-20:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -467,7 +544,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/gMUcWtqfekznnd8c7'>ul. Głogowska 51/2, 60-738 Poznań</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -479,7 +556,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/Sb7yJuHtXfn1tVB96'>ul. 1 Maja 30, 20-410 Lublin</a>\n🕘 8:00-20:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -490,7 +567,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/3Rq4hHXkRjq9Ms757'>ul. Edmunda Bałuki 20, 70-407 Szczecin</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.generalMenu(language),
+            reply_markup: this.featuresMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -529,7 +606,6 @@ class NewBot {
     });
     this.sendContactsForUser(text, userId);
     return JSON.stringify({ inline_keyboard: buttons });
-
   }
   sendContactsForUser(text, userId) {
     const usersBaseData = fs.readFileSync("usersBase.json");
@@ -609,7 +685,7 @@ class NewBot {
     const chatUrl = `https://t.me/${phoneNumber}`;
 
     const keyboard = {
-      inline_keyboard: [[{ text: contactName[language], url: chatUrl}]],
+      inline_keyboard: [[{ text: contactName[language], url: chatUrl }]],
       resize_keyboard: true, // Разрешить кнопкам изменять размер для соответствия экрану
     };
     const managerText = {
@@ -623,17 +699,30 @@ class NewBot {
         reply_markup: JSON.stringify(keyboard),
         resize_keyboard: true,
       });
-      this.whatelse(userId,language)
+      this.whatelse(userId, language);
     }, 1000);
   }
-  whatelse(userId, language){
+  whatelse(userId, language) {
     let text = {
       en: "Shall we look at something else?",
       ru: "Посмотрим что-то еще?",
       pl: "Zobaczymy coś jeszcze?",
       ukr: "Подивимось ще щось?",
-    }
+    };
     bot.sendMessage(userId, text[language], {
+      reply_markup: this.featuresMenu(language),
+      resize_keyboard: true,
+    });
+  }
+  sendGeneralMenu(userInput, language) {
+    const chatId = userInput.chat.id;
+    let text = {
+      en: "Anything else?",
+      ru: "Что-то еще?",
+      pl: "Coś jeszcze?",
+      ukr: "Щось ще?",
+    };
+    bot.sendMessage(chatId, text[language], {
       reply_markup: this.generalMenu(language),
       resize_keyboard: true,
     });
@@ -710,38 +799,40 @@ class NewBot {
   getCountryEmoji(countryCode) {
     // Примеры эмодзи флагов
     const flagEmojis = {
-      EUR: "🇪🇺",  // Евро
-      USD: "🇺🇸",  // Доллар США
-      GBP: "🇬🇧",  // Фунт стерлингов
-      CHF: "🇨🇭",  // Швейцарский франк
-      ILS: "🇮🇱",  // Израильский шекель
-      CNY: "🇨🇳",  // Китайский юань
-      TRY: "🇹🇷",  // Турецкая лира
-      CAD: "🇨🇦",  // Канадский доллар
-      AUD: "🇦🇺",  // Австралийский доллар
-      NOK: "🇳🇴",  // Норвежская крона
-      SEK: "🇸🇪",  // Шведская крона
-      CZK: "🇨🇿",  // Чешская крона
-      HUF: "🇭🇺",  // Венгерский форинт
-      HKD: "🇭🇰",  // Гонконгский доллар
-      ISK: "🇮🇸",  // Исландская крона
-      JPY: "🇯🇵",  // Японская иена
-      AED: "🇦🇪",  // Дирхам ОАЭ
-      UAH: "🇺🇦",  // Гривна (Украина)
-      BGN: "🇧🇬",  // Лев (Болгария)
-      RON: "🇷🇴",  // Лей (Румыния)
+      EUR: "🇪🇺", // Евро
+      USD: "🇺🇸", // Доллар США
+      GBP: "🇬🇧", // Фунт стерлингов
+      CHF: "🇨🇭", // Швейцарский франк
+      ILS: "🇮🇱", // Израильский шекель
+      CNY: "🇨🇳", // Китайский юань
+      TRY: "🇹🇷", // Турецкая лира
+      CAD: "🇨🇦", // Канадский доллар
+      AUD: "🇦🇺", // Австралийский доллар
+      NOK: "🇳🇴", // Норвежская крона
+      SEK: "🇸🇪", // Шведская крона
+      CZK: "🇨🇿", // Чешская крона
+      HUF: "🇭🇺", // Венгерский форинт
+      HKD: "🇭🇰", // Гонконгский доллар
+      ISK: "🇮🇸", // Исландская крона
+      JPY: "🇯🇵", // Японская иена
+      AED: "🇦🇪", // Дирхам ОАЭ
+      UAH: "🇺🇦", // Гривна (Украина)
+      BGN: "🇧🇬", // Лев (Болгария)
+      RON: "🇷🇴", // Лей (Румыния)
       EUB: "🇪🇺",
-  };
+    };
 
     return flagEmojis[countryCode] || "";
   }
   sendAboutInfo(language, userInput) {
     const chatId = userInput.chat.id;
-    const instagramIcon = '📷'; // Символ, похожий на Instagram
-    const facebookIcon = '🅕';  // Символ, похожий на Facebook
+    const instagramIcon = "📷"; // Символ, похожий на Instagram
+    const facebookIcon = "🅕"; // Символ, похожий на Facebook
 
-    const instagramUrl = 'https://www.instagram.com/cliptech.inc/?igsh=MTEwdThwMXRycWgxbw%3D%3D&utm_source=qr'; // замените на ваш URL Instagram
-    const facebookUrl = 'https://www.facebook.com/profile.php?id=61567262404118';   // замените на ваш URL Facebook
+    const instagramUrl =
+      "https://www.instagram.com/cliptech.inc/?igsh=MTEwdThwMXRycWgxbw%3D%3D&utm_source=qr"; // замените на ваш URL Instagram
+    const facebookUrl =
+      "https://www.facebook.com/profile.php?id=61567262404118"; // замените на ваш URL Facebook
 
     const options = {
       reply_markup: {
@@ -753,12 +844,15 @@ class NewBot {
         ],
       },
     };
-
-    const message = 'Nasze linki do Instagrama i Facebooka:';
-
-    bot.sendMessage(chatId, message, options);
+    let message = {
+      en: "Our links to Instagram and Facebook:",
+      ru: "Наши ссылки на Instagram и Facebook:",
+      pl: "Nasze linki do Instagrama i Facebooka:",
+      ukr: "Наші посилання на Instagram та Facebook:"
+    };
+    bot.sendMessage(chatId, message[language], options);
     setTimeout(() => {
-      this.whatelse(chatId, language);
+      this.sendGeneralMenu(userInput, language);
     }, 2000);
   }
   actualMultitul(language, userInput) {
@@ -766,125 +860,138 @@ class NewBot {
 
     // Создаем текст для каждого раздела на польском
     const sections = {
-        news: {
-            title: 'Wiadomości',
-            content: 'Tutaj będą świeże wiadomości o Twoich produktach, wydarzeniach i ofertach. Śledź aktualizacje!'
-        },
-        prices: {
-            title: 'Ceny usług',
-            content: 'Wyświetlaj aktualne ceny swoich usług, aby użytkownicy mogli szybko zapoznać się z cennikiem.'
-        },
-        promotions: {
-            title: 'Specjalne promocje',
-            content: 'Informuj klientów o zniżkach i promocjach, aby nie przegapili korzystnych ofert.'
-        },
-        faq: {
-            title: 'FAQ',
-            content: 'Podaj użytkownikom informacje na temat często zadawanych pytań lub przydatne porady.'
-        }
+      news: {
+        title: "Wiadomości",
+        content:
+          "Tutaj będą świeże wiadomości o Twoich produktach, wydarzeniach i ofertach. Śledź aktualizacje!",
+      },
+      prices: {
+        title: "Ceny usług",
+        content:
+          "Wyświetlaj aktualne ceny swoich usług, aby użytkownicy mogli szybko zapoznać się z cennikiem.",
+      },
+      promotions: {
+        title: "Specjalne promocje",
+        content:
+          "Informuj klientów o zniżkach i promocjach, aby nie przegapili korzystnych ofert.",
+      },
+      faq: {
+        title: "FAQ",
+        content:
+          "Podaj użytkownikom informacje na temat często zadawanych pytań lub przydatne porady.",
+      },
     };
 
     // Создаем кнопки для каждого раздела и главного меню
     const inlineKeyboard = [
-        [
-            { text: sections.news.title, callback_data: 'toggle_news' },
-            { text: sections.prices.title, callback_data: 'toggle_prices' },
-        ],
-        [
-            { text: sections.promotions.title, callback_data: 'toggle_promotions' },
-            { text: sections.faq.title, callback_data: 'toggle_faq' },
-        ],
-        [
-            { text: 'Do głównego menu', callback_data: 'go_to_main_menu' }
-        ]
+      [
+        { text: sections.news.title, callback_data: "toggle_news" },
+        { text: sections.prices.title, callback_data: "toggle_prices" },
+      ],
+      [
+        { text: sections.promotions.title, callback_data: "toggle_promotions" },
+        { text: sections.faq.title, callback_data: "toggle_faq" },
+      ],
+      [{ text: "Do głównego menu", callback_data: "go_to_main_menu" }],
     ];
 
     // Начальное сообщение на польском
-    let initialMessage = 'Wybierz sekcję, aby dowiedzieć się więcej:';
+    let initialMessage = "Wybierz sekcję, aby dowiedzieć się więcej:";
 
     // Отправляем сообщение с кнопками
-    bot.sendMessage(chatId, initialMessage, {
+    bot
+      .sendMessage(chatId, initialMessage, {
         reply_markup: {
-            inline_keyboard: inlineKeyboard,
-            resize_keyboard: true,
-            one_time_keyboard: false
-        }
-    }).then(sentMessage => {
+          inline_keyboard: inlineKeyboard,
+          resize_keyboard: true,
+          one_time_keyboard: false,
+        },
+      })
+      .then((sentMessage) => {
         // Хранение текущего состояния
         const sectionStates = {
-            news: false,
-            prices: false,
-            promotions: false,
-            faq: false
+          news: false,
+          prices: false,
+          promotions: false,
+          faq: false,
         };
 
         // Обработка нажатий на кнопки
         const handleCallbackQuery = (query) => {
-            const { data } = query;
-            let responseMessage = 'Wybierz sekcję, aby dowiedzieć się więcej:';
+          const { data } = query;
+          let responseMessage = "Wybierz sekcję, aby dowiedzieć się więcej:";
 
-            // Логика разворачивания и сворачивания текста
-            switch (data) {
-                case 'toggle_news':
-                    sectionStates.news = !sectionStates.news; // Переключаем состояние
-                    responseMessage += sectionStates.news ? `\n\n${sections.news.content}` : '';
-                    break;
-                case 'toggle_prices':
-                    sectionStates.prices = !sectionStates.prices;
-                    responseMessage += sectionStates.prices ? `\n\n${sections.prices.content}` : '';
-                    break;
-                case 'toggle_promotions':
-                    sectionStates.promotions = !sectionStates.promotions;
-                    responseMessage += sectionStates.promotions ? `\n\n${sections.promotions.content}` : '';
-                    break;
-                case 'toggle_faq':
-                    sectionStates.faq = !sectionStates.faq;
-                    responseMessage += sectionStates.faq ? `\n\n${sections.faq.content}` : '';
-                    break;
-                    case 'go_to_main_menu':
-                      // Удаляем обработчик перед вызовом функции
-                      bot.removeListener('callback_query', handleCallbackQuery);
-                      // Удаляем текущее сообщение с кнопками
-                      bot.deleteMessage(chatId, query.message.message_id)
-                          .then(() => {
-                              // После удаления сообщения вызываем функцию для перехода в главное меню
-                              this.whatelse(chatId, language);
-                          })
-                          .catch(err => {
-                              console.error("Error deleting message:", err);
-                          });
-                      return;
-                default:
-                    break;
-            }
-
-            // Проверяем, изменилось ли сообщение
-            if (responseMessage !== query.message.text) {
-                // Обновляем сообщение с кнопками
-                bot.editMessageText(responseMessage, {
-                    chat_id: chatId,
-                    message_id: query.message.message_id,
-                    reply_markup: {
-                        inline_keyboard: inlineKeyboard,
-                        resize_keyboard: true,
-                        one_time_keyboard: false
-                    }
-                }).catch(err => {
-                    console.error("Error editing message:", err);
+          // Логика разворачивания и сворачивания текста
+          switch (data) {
+            case "toggle_news":
+              sectionStates.news = !sectionStates.news; // Переключаем состояние
+              responseMessage += sectionStates.news
+                ? `\n\n${sections.news.content}`
+                : "";
+              break;
+            case "toggle_prices":
+              sectionStates.prices = !sectionStates.prices;
+              responseMessage += sectionStates.prices
+                ? `\n\n${sections.prices.content}`
+                : "";
+              break;
+            case "toggle_promotions":
+              sectionStates.promotions = !sectionStates.promotions;
+              responseMessage += sectionStates.promotions
+                ? `\n\n${sections.promotions.content}`
+                : "";
+              break;
+            case "toggle_faq":
+              sectionStates.faq = !sectionStates.faq;
+              responseMessage += sectionStates.faq
+                ? `\n\n${sections.faq.content}`
+                : "";
+              break;
+            case "go_to_main_menu":
+              // Удаляем обработчик перед вызовом функции
+              bot.removeListener("callback_query", handleCallbackQuery);
+              // Удаляем текущее сообщение с кнопками
+              bot
+                .deleteMessage(chatId, query.message.message_id)
+                .then(() => {
+                  // После удаления сообщения вызываем функцию для перехода в главное меню
+                  this.whatelse(chatId, language);
+                })
+                .catch((err) => {
+                  console.error("Error deleting message:", err);
                 });
-            }
+              return;
+            default:
+              break;
+          }
 
-            bot.answerCallbackQuery(query.id); // Подтверждаем нажатие кнопки
+          // Проверяем, изменилось ли сообщение
+          if (responseMessage !== query.message.text) {
+            // Обновляем сообщение с кнопками
+            bot
+              .editMessageText(responseMessage, {
+                chat_id: chatId,
+                message_id: query.message.message_id,
+                reply_markup: {
+                  inline_keyboard: inlineKeyboard,
+                  resize_keyboard: true,
+                  one_time_keyboard: false,
+                },
+              })
+              .catch((err) => {
+                console.error("Error editing message:", err);
+              });
+          }
+
+          bot.answerCallbackQuery(query.id); // Подтверждаем нажатие кнопки
         };
 
         // Добавляем обработчик событий только один раз
-        bot.on('callback_query', handleCallbackQuery);
-    });
-}
+        bot.on("callback_query", handleCallbackQuery);
+      });
+  }
 
-
-
-  calculateSum(sum,userId) {
+  calculateSum(sum, userId) {
     const usersBaseData = fs.readFileSync("usersBase.json");
     const usersBase = JSON.parse(usersBaseData);
     const user = usersBase.find((user) => user.userId === userId);
@@ -893,7 +1000,6 @@ class NewBot {
 
     let rate = 3.905; // базовый курс по умолчанию
     if (kursToCalculate && kursToCalculate.USD && kursToCalculate.USD.ds) {
-
       rate = parseFloat(kursToCalculate.USD.ds);
       console.log(rate);
     }
@@ -905,13 +1011,13 @@ class NewBot {
       en: `We calculated, it came out to ${message}. Just in case, check with the manager.`,
       ru: `Мы посчитали, вышло ${message}. На всякий случай уточните у менеджера.`,
       pl: `Policzyliśmy, wyszło ${message}. Na wszelki wypadek sprawdź to z menedżerem.`,
-      ukr: `Ми порахували, вийшло ${message}. Про всяк випадок уточніть у менеджера.`
+      ukr: `Ми порахували, вийшло ${message}. Про всяк випадок уточніть у менеджера.`,
     };
-    console.log('Курс для расчета:', rate);
-    console.log('Исходная сумма в злотых:', sum);
-    console.log('Результирующая сумма в USDT:', result.toFixed(0));
+    console.log("Курс для расчета:", rate);
+    console.log("Исходная сумма в злотых:", sum);
+    console.log("Результирующая сумма в USDT:", result.toFixed(0));
     bot.sendMessage(userId, text[language], {
-      reply_markup: this.generalMenu(language),
+      reply_markup: this.featuresMenu(language),
       resize_keyboard: true,
     });
   }
