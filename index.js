@@ -253,12 +253,12 @@ class NewBot {
       const startMessageInBot = questions[userLanguage].startIn;
       if (userId === chatId) {
         await bot.sendMessage(userId, startMessageInBot, {
-          reply_markup: this.kantorMenu(userLanguage),
+          reply_markup: this.generalMenu(userLanguage),
         });
       }
       if (userId !== chatId) {
         await bot.sendMessage(userId, startMessage, {
-          // reply_markup: this.kantorMenu(userLanguage),
+          // reply_markup: this.generalMenu(userLanguage),
         });
       }
     } catch (error) {
@@ -328,7 +328,7 @@ class NewBot {
       console.error("Произошла ошибка при сохранении пользователя:", error);
     }
   }
-  kantorMenu(language) {
+  generalMenu(language) {
     const questionsData = fs.readFileSync("questions.json");
     const questions = JSON.parse(questionsData);
     const kursText = "💱 " + questions[language].options[0];
@@ -368,7 +368,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.+D%C5%82uga+16,+31-146+Krak%C3%B3w'>ul. Długa 16, 31-146 Kraków</a>\n🕘 9:00-20:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -381,7 +381,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=O%C5%82awska+24,+50-123+Wroc%C5%82aw/'>ul. Oławska 24, 50-123 Wrocław</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -394,7 +394,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Plac+Na+Bramie+5,+37-700+Przemyśl/'>ul. Plac na bramie 5, 37-700 Przemyśl</a>\n🕘 8:00-18:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -407,7 +407,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=Podwale+Staromiejskie+94,+80-844+Gdańsk/'>ul. Podwale Staromiejskie 94/95, 80-844 Gdańsk</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -419,7 +419,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Piotrkowska+97+L.+UZ+3,+90-425+Lódź/'>ul.Piotrkowska 97 L. UZ 3, 90-425 Lódź</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -430,7 +430,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=al.+Jerozolimskie+42,+00-042+Warszawa/'>Aleje Jerozolimskie 42, 00-042 Warszawa</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -443,7 +443,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://www.google.com/maps/search/?api=1&query=ul.Pawia+5A,+31-154+Kraków/'>ul.Pawia 5a (Lokal 23), 31-154 Kraków</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -455,7 +455,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/wXHnDweKBnkqpa5fA'>ul. Świętego Mikołaja 7, 35-005 Rzeszów</a>\n🕘 8:00-20:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -467,7 +467,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/gMUcWtqfekznnd8c7'>ul. Głogowska 51/2, 60-738 Poznań</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -479,7 +479,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/Sb7yJuHtXfn1tVB96'>ul. 1 Maja 30, 20-410 Lublin</a>\n🕘 8:00-20:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -490,7 +490,7 @@ class NewBot {
           userId,
           "<b>Adres twojej firmy</b>\n \n<b>email</b> 📬: biznesowyadres@gmail.com\n \n📍 <a href='https://maps.app.goo.gl/3Rq4hHXkRjq9Ms757'>ul. Edmunda Bałuki 20, 70-407 Szczecin</a>\n🕘 9:00-21:00",
           {
-            reply_markup: this.kantorMenu(language),
+            reply_markup: this.generalMenu(language),
             parse_mode: "HTML",
           }
         );
@@ -634,7 +634,7 @@ class NewBot {
       ukr: "Подивимось ще щось?",
     }
     bot.sendMessage(userId, text[language], {
-      reply_markup: this.kantorMenu(language),
+      reply_markup: this.generalMenu(language),
       resize_keyboard: true,
     });
   }
@@ -710,24 +710,28 @@ class NewBot {
   getCountryEmoji(countryCode) {
     // Примеры эмодзи флагов
     const flagEmojis = {
-      EUR: "🇪🇺",
-      USD: "🇺🇸",
-      GBP: "🇬🇧",
-      CHF: "🇨🇭",
-      ILS: "🇮🇱",
-      CNY: "🇨🇳",
-      TRY: "🇹🇷",
-      CAD: "🇨🇦",
-      AUD: "🇦🇺",
-      NOK: "🇳🇴",
-      SEK: "🇸🇪",
-      CZK: "🇨🇿",
-      HUF: "🇭🇺",
-      HKD: "🇭🇰",
-      ISK: "🇮🇸",
-      JPY: "🇯🇵",
-      AED: "🇦🇪",
-    };
+      EUR: "🇪🇺",  // Евро
+      USD: "🇺🇸",  // Доллар США
+      GBP: "🇬🇧",  // Фунт стерлингов
+      CHF: "🇨🇭",  // Швейцарский франк
+      ILS: "🇮🇱",  // Израильский шекель
+      CNY: "🇨🇳",  // Китайский юань
+      TRY: "🇹🇷",  // Турецкая лира
+      CAD: "🇨🇦",  // Канадский доллар
+      AUD: "🇦🇺",  // Австралийский доллар
+      NOK: "🇳🇴",  // Норвежская крона
+      SEK: "🇸🇪",  // Шведская крона
+      CZK: "🇨🇿",  // Чешская крона
+      HUF: "🇭🇺",  // Венгерский форинт
+      HKD: "🇭🇰",  // Гонконгский доллар
+      ISK: "🇮🇸",  // Исландская крона
+      JPY: "🇯🇵",  // Японская иена
+      AED: "🇦🇪",  // Дирхам ОАЭ
+      UAH: "🇺🇦",  // Гривна (Украина)
+      BGN: "🇧🇬",  // Лев (Болгария)
+      RON: "🇷🇴",  // Лей (Румыния)
+      EUB: "🇪🇺",
+  };
 
     return flagEmojis[countryCode] || "";
   }
@@ -907,7 +911,7 @@ class NewBot {
     console.log('Исходная сумма в злотых:', sum);
     console.log('Результирующая сумма в USDT:', result.toFixed(0));
     bot.sendMessage(userId, text[language], {
-      reply_markup: this.kantorMenu(language),
+      reply_markup: this.generalMenu(language),
       resize_keyboard: true,
     });
   }
