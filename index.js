@@ -22,7 +22,6 @@ class NewBot {
     this.usersBaseFilePath = "usersBase.json";
     bot.setMyCommands([
       { command: "/start", description: "Menu" },
-      { command: "/contact", description: "Contacts" },
       { command: "/language", description: "Change language" },
     ]);
   }
@@ -60,15 +59,33 @@ class NewBot {
     }
   } //курс
   commands() {
+    bot.on('polling_error', (error) => {
+      console.log('Polling error:', error);
+    });
     bot.on("message", (msg) => {
+      console.log(msg);
+
+      const usersBaseData = fs.readFileSync("usersBase.json");
+      const text = msg.text;
+      // const chatId = userInput.from.id;
+      const usersBase = JSON.parse(usersBaseData);
+      const userId = msg.from.id;
+      const user = usersBase.find((user) => user.userId === userId);
+
       if (msg.web_app_data) {
         const data = JSON.parse(msg.web_app_data.data);
         const summa = data.sum;
         const userId = msg.from.id;
         this.calculateSum(summa, userId);
       }
+      if(msg.contact){
+        const contact = msg.contact
+        const language = user.language;
+        this.orderBotButton(msg,contact,language)
+      }
     });
     bot.on("message", (userInput) => {
+      console.log(userInput);
       const usersBaseData = fs.readFileSync("usersBase.json");
       const text = userInput.text;
       // const chatId = userInput.from.id;
@@ -235,39 +252,46 @@ class NewBot {
         console.error("Ошибка при отправке клавиатуры:", error);
       });
   }
-  orderBotButton(userInput, language){
-    console.log(userInput.from.username);
+  orderBotButton(userInput, contact, language) {
+    console.log(userInput);
 
     const chatId = userInput.chat.id;
-    const cliptechChat = 380209958;
-    let text = {
+    const cliptechChat = 299219486; // Chat ID менеджера
+    const text = {
       en: "<b>Great!</b>\n\nI’m passing your contact to our manager. Please, wait — someone will contact you shortly.",
-      ru: "<b>Отлично!</b>\n\nПередаю твой контакт нашему менеджеру. Пожалуйста, ожидай — в течение некоторого времени с тобой свяжутся.",
-      pl: "<b>Świetnie!</b>\n\nPrzekazuję Twój kontakt do naszego menedżera. Proszę, poczekaj — ktoś skontaktuje się z Tobą wkrótce.",
-      ukr: "<b>Чудово!</b>\n\nПередаю твій контакт нашому менеджеру. Будь ласка, чекай — з тобою зв’яжуться протягом деякого часу.",
-    };
-    let textToDenis ="Новый заказ! Напиши ему как сможешь"
+      ru: "<b>Отлично!</b>\n\nПередаю Ваш контакт нашему менеджеру. Пожалуйста, ожидайте — с Вами свяжутся в ближайшее время.",
+      pl: "<b>Świetnie!</b>\n\nPrzekazuję Państwa kontakt do naszego menedżera. Proszę, poczekajcie — ktoś skontaktuje się z Państwem wkrótce.",
+      ukr: "<b>Чудово!</b>\n\nПередаю ваш контакт нашому менеджеру. Будь ласка, чекайте — з вами зв’яжуться найближчим часом.",
+  };
+
+
+    let textToDenis = "Новый заказ!";
+
+    // Отправляем сообщение пользователю
     bot.sendMessage(chatId, text[language], {
-      reply_markup: this.generalMenu(language),
-      resize_keyboard: true,
-      parse_mode: "HTML",
+        reply_markup: this.generalMenu(language),
+        resize_keyboard: true,
+        parse_mode: "HTML",
     });
 
-
-    const chatUrl = `https://t.me/${chatId}`;
-
-    const keyboard = {
-      inline_keyboard: [[{ text: userInput.from.username, url: chatUrl }]],
-      resize_keyboard: true, // Разрешить кнопкам изменять размер для соответствия экрану
-    };
-
+    // Отправляем контакт менеджеру
     setTimeout(() => {
-      bot.sendMessage(cliptechChat, textToDenis, {
-        reply_markup: JSON.stringify(keyboard),
-        resize_keyboard: true,
-      });
+        bot.sendContact(cliptechChat, contact.phone_number, contact.first_name, {
+            last_name: contact.last_name, // Если есть фамилия
+        })
+        .then(() => {
+            // Уведомляем менеджера о новом заказе без кнопки
+            bot.sendMessage(cliptechChat, textToDenis);
+        })
+        .catch((err) => {
+            console.log('Ошибка при отправке контакта:', err);
+            // Если произошла ошибка при отправке контакта, уведомляем о ней
+            bot.sendMessage(chatId, 'Произошла ошибка при отправке вашего контакта. Попробуйте снова.');
+        });
     }, 1000);
-  }
+}
+
+
   async gotoPrivateChat(userInput) {
     try {
       const chatId = userInput.chat.id;
@@ -375,7 +399,7 @@ class NewBot {
     return {
       keyboard: [
         [{ text: featuresButton }, { text: ourResourcesText }],
-        [{ text: orderBotButton }],
+        [{ text: orderBotButton ,request_contact: true}],
       ],
       resize_keyboard: true, // Можете убрать, если не требуется
       one_time_keyboard: true,
@@ -858,28 +882,114 @@ class NewBot {
   actualMultitul(language, userInput) {
     const chatId = userInput.chat.id;
 
-    // Создаем текст для каждого раздела на польском
+    // Объект с переводами для разных языков
+    const translations = {
+      pl: {
+        news: {
+          title: "Wiadomości",
+          content:
+            "Tutaj będą świeże wiadomości o Twoich produktach, wydarzeniach i ofertach. Śledź aktualizacje!",
+        },
+        prices: {
+          title: "Ceny usług",
+          content:
+            "Wyświetlaj aktualne ceny swoich usług, aby użytkownicy mogli szybko zapoznać się z cennikiem.",
+        },
+        promotions: {
+          title: "Specjalne promocje",
+          content:
+            "Informuj klientów o zniżkach i promocjach, aby nie przegapili korzystnych ofert.",
+        },
+        faq: {
+          title: "FAQ",
+          content:
+            "Podaj użytkownikom informacje na temat często zadawanych pytań lub przydatne porady.",
+        },
+        initialMessage: "Wybierz sekcję, aby dowiedzieć się więcej:",
+        backToMainMenu: "Do głównego menu"
+      },
+      en: {
+        news: {
+          title: "News",
+          content:
+            "Here you will find fresh news about your products, events, and offers. Stay updated!",
+        },
+        prices: {
+          title: "Service Prices",
+          content:
+            "Display the current prices of your services so users can quickly check the price list.",
+        },
+        promotions: {
+          title: "Special Promotions",
+          content:
+            "Inform customers about discounts and promotions so they don't miss out on great deals.",
+        },
+        faq: {
+          title: "FAQ",
+          content:
+            "Provide users with information about frequently asked questions or useful tips.",
+        },
+        initialMessage: "Choose a section to learn more:",
+        backToMainMenu: "Back to main menu"
+      },
+      ru: {
+        news: {
+          title: "Новости",
+          content:
+            "Здесь будут свежие новости о ваших продуктах, событиях и предложениях. Следите за обновлениями!",
+        },
+        prices: {
+          title: "Цены на услуги",
+          content:
+            "Отображайте актуальные цены на ваши услуги, чтобы пользователи могли быстро ознакомиться с прайсом.",
+        },
+        promotions: {
+          title: "Специальные акции",
+          content:
+            "Информируйте клиентов о скидках и акциях, чтобы они не упустили выгодные предложения.",
+        },
+        faq: {
+          title: "FAQ",
+          content:
+            "Предоставьте пользователям информацию о часто задаваемых вопросах или полезных советах.",
+        },
+        initialMessage: "Выберите раздел, чтобы узнать больше:",
+        backToMainMenu: "В главное меню"
+      },
+      ukr: {
+        news: {
+          title: "Новини",
+          content:
+            "Тут будуть свіжі новини про ваші продукти, події та пропозиції. Слідкуйте за оновленнями!",
+        },
+        prices: {
+          title: "Ціни на послуги",
+          content:
+            "Показуйте актуальні ціни на ваші послуги, щоб користувачі могли швидко ознайомитися з прайсом.",
+        },
+        promotions: {
+          title: "Спеціальні акції",
+          content:
+            "Інформуйте клієнтів про знижки та акції, щоб вони не пропустили вигідні пропозиції.",
+        },
+        faq: {
+          title: "FAQ",
+          content:
+            "Надайте користувачам інформацію про часто задавані питання або корисні поради.",
+        },
+        initialMessage: "Виберіть розділ, щоб дізнатися більше:",
+        backToMainMenu: "В головне меню"
+      }
+    };
+
+    // Получаем переводы для выбранного языка
+    const selectedLang = translations[language] || translations.pl; // По умолчанию используем польский
+
     const sections = {
-      news: {
-        title: "Wiadomości",
-        content:
-          "Tutaj będą świeże wiadomości o Twoich produktach, wydarzeniach i ofertach. Śledź aktualizacje!",
-      },
-      prices: {
-        title: "Ceny usług",
-        content:
-          "Wyświetlaj aktualne ceny swoich usług, aby użytkownicy mogli szybko zapoznać się z cennikiem.",
-      },
-      promotions: {
-        title: "Specjalne promocje",
-        content:
-          "Informuj klientów o zniżkach i promocjach, aby nie przegapili korzystnych ofert.",
-      },
-      faq: {
-        title: "FAQ",
-        content:
-          "Podaj użytkownikom informacje na temat często zadawanych pytań lub przydatne porady.",
-      },
+      news: selectedLang.news,
+      prices: selectedLang.prices,
+      promotions: selectedLang.promotions,
+      faq: selectedLang.faq,
     };
 
     // Создаем кнопки для каждого раздела и главного меню
@@ -892,11 +1002,11 @@ class NewBot {
         { text: sections.promotions.title, callback_data: "toggle_promotions" },
         { text: sections.faq.title, callback_data: "toggle_faq" },
       ],
-      [{ text: "Do głównego menu", callback_data: "go_to_main_menu" }],
+      [{ text: selectedLang.backToMainMenu, callback_data: "go_to_main_menu" }],
     ];
 
-    // Начальное сообщение на польском
-    let initialMessage = "Wybierz sekcję, aby dowiedzieć się więcej:";
+    // Начальное сообщение на выбранном языке
+    let initialMessage = selectedLang.initialMessage;
 
     // Отправляем сообщение с кнопками
     bot
@@ -919,7 +1029,7 @@ class NewBot {
         // Обработка нажатий на кнопки
         const handleCallbackQuery = (query) => {
           const { data } = query;
-          let responseMessage = "Wybierz sekcję, aby dowiedzieć się więcej:";
+          let responseMessage = initialMessage;
 
           // Логика разворачивания и сворачивания текста
           switch (data) {
